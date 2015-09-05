@@ -23,9 +23,12 @@ Milestone 1 let's get started
 * session and cookies management
 * client project generation from command
 * erros in html templates while dev mode enabled
+* stop and restart by command line
+* more commands line
 
 Milestone 2 do it better
 * load tests and benchmarks
+* instrumentation
 * caching and optimizations
 * RFC2616 full implementation (a lot of work)
 * documentation serving module
