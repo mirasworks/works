@@ -7,9 +7,9 @@ import java.io.UnsupportedEncodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.http.WorksRequest;
 import com.mirasworks.module.files.StaticFileModule;
 import com.mirasworks.module.mvc.Response;
+import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.exceptions.Ex403Forbiden;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 

@@ -1,4 +1,4 @@
-package com.mirasworks.server;
+package com.mirasworks.start;
 
 public interface IServer {
 

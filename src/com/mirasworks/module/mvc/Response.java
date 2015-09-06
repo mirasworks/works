@@ -25,7 +25,7 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.http.Cookie;
+import com.mirasworks.server.http.Cookie;
 import com.mirasworks.util.DateUtil;
 
 /**

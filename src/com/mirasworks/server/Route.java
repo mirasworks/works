@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.http.WorksRequest;
+import com.mirasworks.server.http.WorksRequest;
 
 /**
  * TODO make a route cache with that to avoid resolve the route many times

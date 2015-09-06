@@ -1,7 +1,6 @@
 package com.mirasworks.start;
 
 import com.mirasworks.configuration.api.ConfigurationManager;
-import com.mirasworks.http.StarterService;
 import com.mirasworks.tools.clia.impl.CliApplication;
 
 /**
@@ -53,7 +52,7 @@ public class Application extends CliApplication {
             return false;
         }
 
-        serverService = new StarterService();
+        serverService = new ServerManager();
 
         return true;
 
