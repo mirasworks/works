@@ -13,7 +13,7 @@ import com.mirasworks.tools.clia.impl.CliCommandParser;
  */
 public class CliCommandParserWorks extends CliCommandParser {
 
-	private IServerService server = null;
+	private IServers server = null;
 
 	public CliCommandParserWorks() {
 		server  = Application.getServerService();

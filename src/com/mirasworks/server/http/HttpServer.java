@@ -62,7 +62,7 @@ public class HttpServer extends AbstractServer {
         // Set up the event pipeline factory.
         try {
             serverBosstrap.setOption("child.tcpNodelay", true);
-            serverBosstrap.setPipelineFactory(new PipelineFactory(context));
+            serverBosstrap.setPipelineFactory(new HttpPipelineFactory(context));
 
             // Bind and start to accept incoming connections.
             serverBosstrap.bind(new InetSocketAddress(getPort()));

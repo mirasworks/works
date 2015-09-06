@@ -1,6 +1,6 @@
 package com.mirasworks.start;
 
-public interface IServerService {
+public interface IServers {
 
 	IServer addServer(String key, IServer value);
 

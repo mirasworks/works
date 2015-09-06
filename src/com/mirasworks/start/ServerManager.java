@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.mirasworks.server.http.HttpServer;
 
-public class ServerManager implements IServerService {
+public class ServerManager implements IServers {
     private final Logger l = LoggerFactory.getLogger(ServerManager.class);
 
     private SortedMap<String, IServer> servers = new TreeMap<String, IServer>();

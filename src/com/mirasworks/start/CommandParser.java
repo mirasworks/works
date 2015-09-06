@@ -10,7 +10,7 @@ public class CommandParser implements ISysInParser {
 
 
 
-	private IServerService server = null;
+	private IServers server = null;
 
 	public CommandParser() {
 		server = Application.getServerService();

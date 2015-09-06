@@ -10,10 +10,10 @@ import com.mirasworks.tools.clia.impl.CliApplication;
  */
 public class Application extends CliApplication {
 
-    private static IServerService serverService = null;
+    private static IServers serverService = null;
     private static ConfigurationManager config = new ConfigurationManager();
 
-    public static IServerService getServerService() {
+    public static IServers getServerService() {
         return serverService;
     }
 

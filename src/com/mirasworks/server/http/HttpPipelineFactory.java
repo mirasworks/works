@@ -1,4 +1,4 @@
-package com.mirasworks.http;
+package com.mirasworks.server.http;
 
 
 
@@ -12,10 +12,10 @@ import org.jboss.netty.handler.ssl.SslContext;
 import com.mirasworks.server.Context;
 
 
-public class PipelineFactory implements ChannelPipelineFactory {
+public class HttpPipelineFactory implements ChannelPipelineFactory {
 
     private final Context context;
-    public PipelineFactory(Context context) {
+    public HttpPipelineFactory(Context context) {
         this.context = context;
     }
 
@@ -28,7 +28,7 @@ public class PipelineFactory implements ChannelPipelineFactory {
             pipeline.addLast("ssl", sslCtx.newHandler());
         }
 
-        ServerHandler  httpServerHandeler = new ServerHandler();
+        HttpServerHandler  httpServerHandeler = new HttpServerHandler();
         httpServerHandeler.setContext(context);
 
         // Uncomment the following line if you want HTTPS
