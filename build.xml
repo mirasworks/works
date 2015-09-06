@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<project
+         basedir="."
+         default="release"
+         name="works">
+	<property name="implementation.version" value="0.0" />
+	<property name="domoroboTools" value="../tools" />
+    <property environment="env" />
+    <property name="debuglevel" value="source,lines,vars" />
+    <property name="target" value="1.7" />
+    <property name="source" value="1.7" />
+    <property name="binDir" value="bin" />
+    <property name="releaseDir" value="release" />
+    <available file=".git" type="dir" property="git.present" />
+
+
+    <target name="git.revision.count"
+            description="Store git revision count in ${repository.version.count}"
+            if="git.present">
+        <exec executable="git"
+              outputproperty="git.revision.count"
+              failifexecutionfails="false"
+              errorproperty="">
+            <arg value="rev-list" />
+            <arg value="HEAD" />
+            <arg value="--count" />
+        </exec>
+        <condition property="version.count"
+                   value="${git.revision.count}"
+                   else="0">
+            <and>
+                <isset property="git.revision.count" />
+                <length string="${git.revision.count}"
+                        trim="yes"
+                        length="0"
+                        when="greater" />
+            </and>
+        </condition>
+
+        <echo message="git version count ${version.count}" />
+    </target>
+
+    <target name="git.revision"
+            description="Store git revision in ${repository.version}"
+            if="git.present">
+        <exec executable="git"
+              outputproperty="git.revision"
+              failifexecutionfails="false"
+              errorproperty="">
+            <arg value="describe" />
+            <arg value="--tags" />
+            <arg value="--always" />
+            <arg value="HEAD" />
+
+        </exec>
+        <condition property="repository.version"
+                   value="${git.revision}"
+                   else="unknown">
+            <and>
+                <isset property="git.revision" />
+                <length string="${git.revision}"
+                        trim="yes"
+                        length="0"
+                        when="greater" />
+            </and>
+        </condition>
+
+        <echo message="git revision hash tag : ${git.revision}" />
+    </target>
+    <target name="clean">
+        <echo>clean bin and release</echo>
+        <echo message="Classpath : ${domoroboTools}" />
+		<echo message="delete binDir : ${binDir}"/>
+		<echo message="delete releaseDir : ${releaseDir}"/>
+        <delete dir="${binDir}" />
+        <delete dir="${releaseDir}" />
+    </target>
+
+
+
+    <fileset id="all.jars" dir="lib">
+        <include name="*.jar" />
+    </fileset>
+    <path id="classpath">
+        <pathelement location="${domoroboTools}" />
+        <fileset dir="${domoroboTools}/lib" />
+        <fileset refid="all.jars" />
+        <fileset dir="_conf/dev/" includes="log4j.properties" />
+    </path>
+
+
+    <target name="build" depends="clean">
+        <property name="classPath.list" refid="classpath" />
+        <echo message="Building ${ant.project.name}: with ant file : ${ant.file} source ${source}" />
+
+        <mkdir dir="./${binDir}" />
+        <javac destdir="${binDir}"
+               debuglevel="${debuglevel}"
+               debug="true"
+               source="${source}"
+               target="${target}"
+               includeantruntime="false">
+            <src path="src" />
+            <src path="${domoroboTools}" />
+            <classpath refid="classpath" />
+        </javac>
+    </target>
+
+
+    <target name="release" depends="build, git.revision.count">
+
+        <manifestclasspath property="jar.classpath"
+                           jarfile="./${ant.project.name}.${implementation.version}.jar">
+            <classpath refid="classpath" />
+        </manifestclasspath>
+
+        <mkdir dir="./${releaseDir}" />
+        <jar destfile="./${releaseDir}/${ant.project.name}.${implementation.version}.${version.count}.jar"
+             basedir="./bin">
+            <manifest>
+
+                <attribute name="Implementation-Vendor" value="domorobo.com" />
+                <attribute name="Implementation-Title"
+                           value="${ant.project.name}" />
+                <attribute name="Implementation-Version"
+                           value="${implementation.version}.${version.count}" />
+                <attribute name="Main-Class" value="com.mirasworks.start.Main" />
+                <attribute name="Class-Path" value="${jar.classpath}" />
+            </manifest>
+        </jar>
+
+        <echo message="Classpath : ${jar.classpath}" />
+    </target>
+
+</project>
