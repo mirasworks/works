@@ -88,21 +88,12 @@ public class WorksResponse {
 
 	private int statusCode;
 
-	/*
-	 * The object that will be rendered. Could be a Java Pojo. Or a map. Or xyz.
-	 * Will be handled by the TemplateReneringEngine.
-	 */
-	private Object renderable;
 
-	/**
-	 * Something like: "text/html" or "application/json"
-	 */
+
+
 	private String contentType;
 
-	/**
-	 * Something like: "utf-8" => will be appended to the content-type. eg
-	 * "text/html; charset=utf-8"
-	 */
+
 	private String charset;
 
 	private Map<String, String> headers;
@@ -114,15 +105,7 @@ public class WorksResponse {
 	// TODO make a getter setter
 	public ByteArrayOutputStream out;
 
-	/**
-	 * A Response. Sets utf-8 as charset and status code by default. Refer to
-	 * {@link WorksResponse#SC_200_OK}, {@link WorksResponse#SC_204_NO_CONTENT} and so on
-	 * for some short cuts to predefined results.
-	 *
-	 * @param statusCode
-	 *            The status code to set for the Response. Shortcuts to the code
-	 *            at: {@link WorksResponse#SC_200_OK}
-	 */
+	
 	public WorksResponse() {
 		// maybe a 500 by default instead
 		this.statusCode = SC_200_OK;
@@ -131,28 +114,18 @@ public class WorksResponse {
 		this.cookies = new ArrayList<Cookie>();
 	}
 
-	/**
-	 * A Response. Sets utf-8 as charset and status code by default. Refer to
-	 * {@link WorksResponse#SC_200_OK}, {@link WorksResponse#SC_204_NO_CONTENT} and so on
-	 * for some short cuts to predefined results.
-	 *
-	 * @param statusCode
-	 *            The status code to set for the Response. Shortcuts to the code
-	 *            at: {@link WorksResponse#SC_200_OK}
-	 */
+
 	public WorksResponse(int statusCode) {
 
 		this.statusCode = statusCode;
-		this.charset = "utf-8";
+		this.charset = "UTF-8";
 
 		this.headers = new TreeMap<String, String>();
 		this.cookies = new ArrayList<Cookie>();
 
 	}
 
-	public Object getRenderable() {
-		return renderable;
-	}
+	
 
 	public String getContentType() {
 		return contentType;
@@ -219,20 +192,9 @@ public class WorksResponse {
 		return statusCode;
 	}
 
-	/**
-	 * Set the status of this Response. Refer to {@link WorksResponse#SC_200_OK},
-	 * {@link WorksResponse#SC_204_NO_CONTENT} and so on for some short cuts to
-	 * predefined results.
-	 *
-	 * @param statusCode
-	 *            The status code. Response ({@link WorksResponse#SC_200_OK})
-	 *            provides some helpers.
-	 * @return The Response you executed the method on for method chaining.
-	 */
-	public WorksResponse setStatus(int statusCode) {
-		this.statusCode = statusCode;
-		return this;
-	}
+
+	
+
 
 	public String getTemplate() {
 		return template;
@@ -252,16 +214,37 @@ public class WorksResponse {
 		return this;
 	}
 
+	
+	/**
+	 * 
+	 * @deprecated
+	 */
+	public WorksResponse setStatus(int statusCode) {
+		this.statusCode = statusCode;
+		return this;
+	}
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public WorksResponse serve404() {
 		setStatus(WorksResponse.SC_404_NOT_FOUND);
 		return this;
 	}
 
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public WorksResponse serve500() {
 		setStatus(WorksResponse.SC_500_INTERNAL_SERVER_ERROR);
 		return this;
 	}
 
+	/**
+	 * 
+	 * @deprecated
+	 */
 	public WorksResponse serve403() {
 		setStatus(WorksResponse.SC_403_FORBIDDEN);
 		return this;
@@ -335,7 +318,8 @@ public class WorksResponse {
 	}
 
 	/**
-	 * Set the content type of this Response to {@link WorksResponse#TEXT_PLAIN}.
+	 * Set the content type of this Response to {@link WorksResponse#TEXT_PLAIN}
+	 * .
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#TEXT_PLAIN}.
@@ -346,7 +330,8 @@ public class WorksResponse {
 	}
 
 	/**
-	 * Set the content type of this Response to {@link WorksResponse#APPLICATON_XML}.
+	 * Set the content type of this Response to
+	 * {@link WorksResponse#APPLICATON_XML}.
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#APPLICATON_XML}.
@@ -356,10 +341,7 @@ public class WorksResponse {
 		return this;
 	}
 
-	public WorksResponse file() {
-		contentType = APPLICATION_OCTET_STREAM;
-		return this;
-	}
+
 
 	// TODO here lack FileType contentType and others
 
