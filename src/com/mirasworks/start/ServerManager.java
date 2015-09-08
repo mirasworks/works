@@ -7,7 +7,7 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.server.http.HttpServer;
+import com.mirasworks.server.http.Server;
 
 public class ServerManager implements IServers {
     private final Logger l = LoggerFactory.getLogger(ServerManager.class);
@@ -17,7 +17,7 @@ public class ServerManager implements IServers {
     private boolean isStarted = false;
 
     public ServerManager() {
-        addServer("http", new HttpServer());
+        addServer("http", new Server());
 
     }
 

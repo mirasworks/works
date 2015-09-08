@@ -36,9 +36,9 @@ import com.mirasworks.server.Invoker;
  * @author Koda
  *         here we build the http response
  */
-public class HttpServerHandler extends SimpleChannelUpstreamHandler {
+public class ServerHandler extends SimpleChannelUpstreamHandler {
 
-    private static Logger l = LoggerFactory.getLogger(HttpServerHandler.class);
+    private static Logger l = LoggerFactory.getLogger(ServerHandler.class);
 
     private WorksRequest worksRequest;
 

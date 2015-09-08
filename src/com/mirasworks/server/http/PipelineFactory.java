@@ -7,11 +7,11 @@ import org.jboss.netty.handler.ssl.SslContext;
 
 import com.mirasworks.server.Context;
 
-public class HttpPipelineFactory implements ChannelPipelineFactory {
+public class PipelineFactory implements ChannelPipelineFactory {
 
 	private final Context context;
 
-	public HttpPipelineFactory(Context context) {
+	public PipelineFactory(Context context) {
 		this.context = context;
 	}
 
@@ -24,7 +24,7 @@ public class HttpPipelineFactory implements ChannelPipelineFactory {
 			pipeline.addLast("ssl", sslCtx.newHandler());
 		}
 
-		HttpServerHandler httpServerHandler = new HttpServerHandler();
+		ServerHandler httpServerHandler = new ServerHandler();
 		httpServerHandler.setContext(context);
 
 		// Uncomment the following line if you want HTTPS
@@ -42,7 +42,7 @@ public class HttpPipelineFactory implements ChannelPipelineFactory {
 		// TODO rewrite the httpResponse encoder to handle a worksResponse and
 		// avoid the copy
 		pipeline.addLast("handler", httpServerHandler);
-		pipeline.addLast("encoder", new HttpResponseEncoder());
+		pipeline.addLast("encoder", new ResponseEncoder());
 		// Remove the following line if you don't want automatic content
 		// compression.
 		// pipeline.addLast("deflater", new HttpContentCompressor());

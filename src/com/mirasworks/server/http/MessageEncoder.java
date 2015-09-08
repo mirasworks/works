@@ -27,8 +27,8 @@ import org.jboss.netty.util.CharsetUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class HttpMessageEncoder extends OneToOneEncoder {
-	private final Logger l = LoggerFactory.getLogger(HttpMessageEncoder.class);
+public abstract class MessageEncoder extends OneToOneEncoder {
+	private final Logger l = LoggerFactory.getLogger(MessageEncoder.class);
 	private static final byte[] CRLF = new byte[] { CR, LF };
 	private static final ChannelBuffer LAST_CHUNK = copiedBuffer("0\r\n\r\n", CharsetUtil.US_ASCII);
 
@@ -37,7 +37,7 @@ public abstract class HttpMessageEncoder extends OneToOneEncoder {
 	/**
 	 * Creates a new instance.
 	 */
-	protected HttpMessageEncoder() {
+	protected MessageEncoder() {
 		super();
 	}
 

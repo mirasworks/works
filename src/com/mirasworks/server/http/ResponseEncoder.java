@@ -5,10 +5,10 @@ import static org.jboss.netty.handler.codec.http.HttpConstants.SP;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.handler.codec.http.HttpMessage;
-import com.mirasworks.server.http.HttpMessageEncoder;
+import com.mirasworks.server.http.MessageEncoder;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 
-public class HttpResponseEncoder extends HttpMessageEncoder {
+public class ResponseEncoder extends MessageEncoder {
 
     @Override
     protected void encodeInitialLine(ChannelBuffer buf, HttpMessage message) throws Exception {

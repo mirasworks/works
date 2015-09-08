@@ -19,9 +19,9 @@ import com.mirasworks.server.AbstractServer;
 import com.mirasworks.server.Context;
 import com.mirasworks.start.Application;
 //
-public class HttpServer extends AbstractServer {
+public class Server extends AbstractServer {
 
-    private final Logger l = LoggerFactory.getLogger(HttpServer.class);
+    private final Logger l = LoggerFactory.getLogger(Server.class);
     // Configure SSL.
     private SslContext   sslCtx;
 
@@ -62,7 +62,7 @@ public class HttpServer extends AbstractServer {
         // Set up the event pipeline factory.
         try {
             serverBosstrap.setOption("child.tcpNodelay", true);
-            serverBosstrap.setPipelineFactory(new HttpPipelineFactory(context));
+            serverBosstrap.setPipelineFactory(new PipelineFactory(context));
 
             // Bind and start to accept incoming connections.
             serverBosstrap.bind(new InetSocketAddress(getPort()));
