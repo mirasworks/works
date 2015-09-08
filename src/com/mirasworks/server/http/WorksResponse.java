@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.mirasworks.module.mvc;
+package com.mirasworks.server.http;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -25,7 +25,6 @@ import java.util.TreeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.server.http.Cookie;
 import com.mirasworks.util.DateUtil;
 
 /**

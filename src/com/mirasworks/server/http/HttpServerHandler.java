@@ -28,7 +28,6 @@ import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.module.mvc.WorksResponse;
 import com.mirasworks.server.Context;
 import com.mirasworks.server.Invoker;
 

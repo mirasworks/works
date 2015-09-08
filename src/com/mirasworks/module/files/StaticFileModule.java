@@ -1,9 +1,9 @@
 package com.mirasworks.module.files;
 
-import com.mirasworks.module.mvc.WorksResponse;
 import com.mirasworks.server.Context;
 import com.mirasworks.server.Imodule;
 import com.mirasworks.server.http.WorksRequest;
+import com.mirasworks.server.http.WorksResponse;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 
 public class StaticFileModule  implements Imodule{
