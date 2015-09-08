@@ -7,7 +7,7 @@
 	<classpathentry kind="lib" path="lib/freemarker.jar"/>
 	<classpathentry kind="lib" path="lib/jansi-1.9.jar"/>
 	<classpathentry kind="lib" path="lib/joda-time-2.8.jar"/>
-	<classpathentry kind="lib" path="lib/netty-3.9.5.Final.jar"/>
+	<classpathentry kind="lib" path="lib/netty-3.9.5.Final.jar" sourcepath="/_dev/_src/src_third/java/jbossnetty/netty-3.9.5.Final-sources.jar"/>
 	<classpathentry kind="lib" path="/tools/lib/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="/tools/lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="/tools/lib/slf4j-log4j12-1.7.5.jar"/>
