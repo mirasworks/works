@@ -42,6 +42,11 @@ public class ControllerInvokerModule implements Imodule {
 
 		Route route = new Route(request);
 
+		//TODO temporary
+		if(route.getControllerName().contains(".")) {
+			throw new ExNotMe();
+		}
+
 		classPathBuff.append(route.getControllerName());
 		classPathBuff.append(controllerSuffix);
 		String classPath = classPathBuff.toString();
@@ -55,7 +60,6 @@ public class ControllerInvokerModule implements Imodule {
 
 		try {
 			clazz = Class.forName(classPath);
-			l.info("class found");
 		} catch (ClassNotFoundException e) {
 			l.error("class not found : " + e.getMessage());
 			throw new ExNotMe(e);
@@ -63,7 +67,6 @@ public class ControllerInvokerModule implements Imodule {
 
 		try {
 			ctor = clazz.getConstructor();
-			l.info("constructor found");
 		} catch (NoSuchMethodException | SecurityException e) {
 			l.error("constructor  not found : " + e.getMessage());
 			throw new ExNotMe(e);
@@ -72,7 +75,6 @@ public class ControllerInvokerModule implements Imodule {
 		Object object;
 		try {
 			object = ctor.newInstance();
-			l.info("contructor instance found");
 
 		} catch (InstantiationException e) {
 			l.error("instanciation failed : " + e.getMessage());
