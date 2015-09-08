@@ -44,11 +44,11 @@ public class HttpPipelineFactory implements ChannelPipelineFactory {
         // Uncomment the following line if you don't want to handle HttpChunks.
         //pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
         //TODO rewrite the httpResponse encoder to handle a worksResponse and avoid the copy
+        pipeline.addLast("handler", httpServerHandeler);
         pipeline.addLast("encoder", new HttpResponseEncoder());
         // Remove the following line if you don't want automatic content compression.
         //pipeline.addLast("deflater", new HttpContentCompressor());
         //uncomment to see the request back
-        pipeline.addLast("handler", httpServerHandeler);
         return pipeline;
     }
 }
