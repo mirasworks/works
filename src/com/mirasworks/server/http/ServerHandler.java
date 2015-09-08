@@ -66,6 +66,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
              * @see DefaultHttpRequest
              */
             this.worksRequest = (WorksRequest) e.getMessage();
+            l.info("{}",worksRequest);
 
             if (is100ContinueExpected(worksRequest)) {
                 send100Continue(e);

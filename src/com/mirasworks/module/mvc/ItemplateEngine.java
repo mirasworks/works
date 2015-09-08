@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.Map;
 
+import com.mirasworks.server.http.exceptions.Ex500;
+
 public interface ItemplateEngine {
 
     public void configure();
@@ -13,5 +15,5 @@ public interface ItemplateEngine {
     public void setDefaultEncoding(String encoding);
 
 
-    public void render(String templatePath,Writer outputstream, Map<String, Object> params);
+    public void render(String templatePath,Writer outputstream, Map<String, Object> params) throws Ex500;
 }

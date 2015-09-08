@@ -1,6 +1,7 @@
 package com.mirasworks.server.http;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -28,7 +29,7 @@ public class WorksRequest extends DefaultHttpRequest {
 
 
 
-    private Map<String, List<String>> params;
+    private Map<String, List<String>> params = new LinkedHashMap<String, List<String>>();;
 
     public WorksRequest(HttpVersion httpVersion, HttpMethod method, String uri) {
         super(httpVersion, method, uri);
@@ -72,7 +73,7 @@ public class WorksRequest extends DefaultHttpRequest {
         }
 
         strBuff.append("\r\nparams :\r\n");
-        if (!params.isEmpty()) {
+        if (params != null && !params.isEmpty()) {
             for (Entry<String, List<String>> p : params.entrySet()) {
                 String key = p.getKey();
                 List<String> vals = p.getValue();

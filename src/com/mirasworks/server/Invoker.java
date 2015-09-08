@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import com.mirasworks.module.files.StaticFileModule;
 import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.WorksResponse;
 import com.mirasworks.server.http.exceptions.Ex403Forbiden;
+import com.mirasworks.server.http.exceptions.Ex500;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 
 public class Invoker {
@@ -59,61 +61,32 @@ public class Invoker {
 	}
 
 	private WorksResponse serveForbiden(WorksRequest request, Exception e) {
-		// here better load a 500 or 404controller
-
-		WorksResponse response = new WorksResponse();
-		// TODO use template instead
-		// TODO make template path configurable
-
-		response.html().serve403();
-		String html = "<h1>forbidden 403</h1><br>" + e.getMessage();
+		WorksResponse response = new WorksResponse(HttpResponseStatus.FORBIDDEN);
 		try {
-			response.out = new ByteArrayOutputStream();
-			response.out.write(html.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e1) {
-			l.error("bad : unable to write 403", e);
-		} catch (IOException e1) {
-			l.error("bad : unable to write 403", e);
+			response.html("<h1>forbidden 403</h1><br>" + e.getMessage());
+		} catch (Ex500 e1) {
+			l.error("{}",e1);
 		}
 		return response;
 	}
 
 	private WorksResponse serve500(WorksRequest request, Exception e) {
-
-		WorksResponse response = new WorksResponse();
-		// TODO use template instead
-		// TODO make template path configurable
-
-		response.html().serve500();
-		String html = "<h1>500</h1><br>" + e.getMessage();
+		WorksResponse response = new WorksResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		try {
-			response.out = new ByteArrayOutputStream();
-			response.out.write(html.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e1) {
-			l.error("bad : unable to write 500", e);
-		} catch (IOException e1) {
-			l.error("bad : unable to write 500", e);
+			response.html("<h1>500</h1><br>" + e.getMessage());
+		} catch (Ex500 e1) {
+			l.error("{}",e1);
 		}
 		return response;
 	}
 
 	public WorksResponse serve404(WorksRequest request) {
 
-		WorksResponse response = new WorksResponse();
-		// TODO use template instead
-		// TODO make template path configurable
-
-		response.html().serve404();
-		String html = "<h1>404</h1>";
+		WorksResponse response = new WorksResponse(HttpResponseStatus.NOT_FOUND);
 		try {
-			response.out = new ByteArrayOutputStream();
-			response.out.write(html.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			l.error("bad : unable to write 404", e);
-			serve500(request, e);
-		} catch (IOException e) {
-			l.error("bad : unable to write 404", e);
-			serve500(request, e);
+			response.html("<h1>404</h1>");
+		} catch (Ex500 e) {
+			l.error("{}",e);
 		}
 		return response;
 

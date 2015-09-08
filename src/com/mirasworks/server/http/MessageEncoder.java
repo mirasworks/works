@@ -24,11 +24,9 @@ import org.jboss.netty.handler.codec.http.HttpHeaders.Values;
 import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.jboss.netty.util.CharsetUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public abstract class MessageEncoder extends OneToOneEncoder {
-	private final Logger l = LoggerFactory.getLogger(MessageEncoder.class);
+
 	private static final byte[] CRLF = new byte[] { CR, LF };
 	private static final ChannelBuffer LAST_CHUNK = copiedBuffer("0\r\n\r\n", CharsetUtil.US_ASCII);
 

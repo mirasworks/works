@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mirasworks.server.http.exceptions.Ex500;
 import com.mirasworks.start.Application;
 
 /**
@@ -43,7 +44,7 @@ public class TemplateEngineBridge {
         engine.setDefaultEncoding(defaultEncoding);
     }
 
-    public void render(String templateName, Writer outputstream, Map<String, Object> params) {
+    public void render(String templateName, Writer outputstream, Map<String, Object> params) throws Ex500 {
         StringBuilder strb = new StringBuilder();
         strb.append(templateName);
         strb.append(templateExtension);

@@ -26,7 +26,6 @@ public class ControllerInvokerModule implements Imodule {
 	public ControllerInvokerModule(Context context) {
 
 		this.templateEngine = context.getTemplateEngineBridge();
-		;
 		classPathBuff = new StringBuffer();
 		classPathBuff.append(controllerPackageName);
 
@@ -42,11 +41,10 @@ public class ControllerInvokerModule implements Imodule {
 
 		Route route = new Route(request);
 
-		//TODO temporary
-		if(route.getControllerName().contains(".")) {
+		// TODO rather do an alphaNum pattern matcher
+		if (route.getControllerName().contains(".") || route.getMethodName().contains(".") ) {
 			throw new ExNotMe();
 		}
-		
 
 		classPathBuff.append(route.getControllerName());
 		classPathBuff.append(controllerSuffix);
@@ -134,7 +132,7 @@ public class ControllerInvokerModule implements Imodule {
 
 			} catch (InvocationTargetException e) {
 				l.error(e.getMessage());
-				// TODO serve 404 instead
+				// TODO serve 404 instead ?
 				throw new Ex500(e);
 
 			}

@@ -16,15 +16,22 @@
 
 package com.mirasworks.server.http;
 
+import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
+
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mirasworks.server.http.exceptions.Ex500;
 import com.mirasworks.util.DateUtil;
 
 /**
@@ -85,13 +92,7 @@ public class WorksResponse {
 
 	public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 
-	private int statusCode;
-
-
-
-
 	private String contentType;
-
 
 	private String charset;
 
@@ -100,31 +101,46 @@ public class WorksResponse {
 	private List<Cookie> cookies;
 
 	private String template;
+	private HttpVersion version;
 
 	// TODO make a getter setter
 	public ByteArrayOutputStream out;
 
-	
+	private HttpResponseStatus status;
+
+	public WorksResponse(HttpResponseStatus status) {
+
+		this();
+		// always 1.1 it will not changes tomorrow
+		setVersion(HTTP_1_1);
+		setStatus(status);
+		
+	}
+
 	public WorksResponse() {
-		// maybe a 500 by default instead
-		this.statusCode = SC_200_OK;
 		this.charset = "UTF-8";
 		this.headers = new TreeMap<String, String>();
 		this.cookies = new ArrayList<Cookie>();
 	}
 
-
-	public WorksResponse(int statusCode) {
-
-		this.statusCode = statusCode;
-		this.charset = "UTF-8";
-
-		this.headers = new TreeMap<String, String>();
-		this.cookies = new ArrayList<Cookie>();
-
+	public HttpResponseStatus getStatus() {
+		return status;
 	}
 
-	
+	public WorksResponse setStatus(HttpResponseStatus status) {
+		if (status == null) {
+			throw new NullPointerException("status");
+		}
+		this.status = status;
+		return this;
+	}
+
+	public void setVersion(HttpVersion version) {
+		if (version == null) {
+			throw new NullPointerException("version");
+		}
+		this.version = version;
+	}
 
 	public String getContentType() {
 		return contentType;
@@ -187,14 +203,6 @@ public class WorksResponse {
 		return this;
 	}
 
-	public int getStatusCode() {
-		return statusCode;
-	}
-
-
-	
-
-
 	public String getTemplate() {
 		return template;
 	}
@@ -213,42 +221,6 @@ public class WorksResponse {
 		return this;
 	}
 
-	
-	/**
-	 * 
-	 * @deprecated
-	 */
-	public WorksResponse setStatus(int statusCode) {
-		this.statusCode = statusCode;
-		return this;
-	}
-	/**
-	 * 
-	 * @deprecated
-	 */
-	public WorksResponse serve404() {
-		setStatus(WorksResponse.SC_404_NOT_FOUND);
-		return this;
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 */
-	public WorksResponse serve500() {
-		setStatus(WorksResponse.SC_500_INTERNAL_SERVER_ERROR);
-		return this;
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 */
-	public WorksResponse serve403() {
-		setStatus(WorksResponse.SC_403_FORBIDDEN);
-		return this;
-	}
-
 	/**
 	 * A redirect that uses 303 see other.
 	 *
@@ -259,7 +231,7 @@ public class WorksResponse {
 	 */
 	public WorksResponse redirect(String url) {
 
-		setStatus(WorksResponse.SC_303_SEE_OTHER);
+		setStatus(HttpResponseStatus.SEE_OTHER);
 		addHeader(WorksResponse.LOCATION, url);
 
 		return this;
@@ -275,7 +247,7 @@ public class WorksResponse {
 	 */
 	public WorksResponse redirectTemporary(String url) {
 
-		setStatus(WorksResponse.SC_307_TEMPORARY_REDIRECT);
+		setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
 		addHeader(WorksResponse.LOCATION, url);
 
 		return this;
@@ -283,12 +255,33 @@ public class WorksResponse {
 
 	/**
 	 * Set the content type of this Response to {@link WorksResponse#TEXT_HTML}.
+	 * @param string 
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#TEXT_HTML}.
+	 * @throws Ex500 
 	 */
-	public WorksResponse html() {
+	public WorksResponse html(String html) throws Ex500 {
 		contentType = TEXT_HTML;
+		// TODO use template instead
+		// TODO make template path configurable
+		return writeString(html);
+		
+	}
+	
+	private  WorksResponse writeString(String string) throws Ex500 {
+	
+		try {
+			out = new ByteArrayOutputStream();
+			out.write(string.getBytes("UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			throw new Ex500("unable to write html beacause of bad encoding", e.getCause());
+		} catch (IOException e) {
+			throw new Ex500("unable to write content beacause of io error", e.getCause());
+		}finally {
+			//TODO Close
+		}
+		
 		return this;
 	}
 
@@ -319,12 +312,15 @@ public class WorksResponse {
 	/**
 	 * Set the content type of this Response to {@link WorksResponse#TEXT_PLAIN}
 	 * .
+	 * @param string 
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#TEXT_PLAIN}.
+	 * @throws Ex500 
 	 */
-	public WorksResponse text() {
+	public WorksResponse text(String text) throws Ex500 {
 		contentType = TEXT_PLAIN;
+		writeString(text);
 		return this;
 	}
 
@@ -339,8 +335,6 @@ public class WorksResponse {
 		contentType = APPLICATION_XML;
 		return this;
 	}
-
-
 
 	// TODO here lack FileType contentType and others
 
