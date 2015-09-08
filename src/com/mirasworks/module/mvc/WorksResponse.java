@@ -33,8 +33,8 @@ import com.mirasworks.util.DateUtil;
  * @author modified from jetty rewrite still in progress
  *
  */
-public class Response {
-	private final Logger l = LoggerFactory.getLogger(Response.class);
+public class WorksResponse {
+	private final Logger l = LoggerFactory.getLogger(WorksResponse.class);
 
 	// /////////////////////////////////////////////////////////////////////////
 	// HTTP Status codes (for convenience)
@@ -116,14 +116,14 @@ public class Response {
 
 	/**
 	 * A Response. Sets utf-8 as charset and status code by default. Refer to
-	 * {@link Response#SC_200_OK}, {@link Response#SC_204_NO_CONTENT} and so on
+	 * {@link WorksResponse#SC_200_OK}, {@link WorksResponse#SC_204_NO_CONTENT} and so on
 	 * for some short cuts to predefined results.
 	 *
 	 * @param statusCode
 	 *            The status code to set for the Response. Shortcuts to the code
-	 *            at: {@link Response#SC_200_OK}
+	 *            at: {@link WorksResponse#SC_200_OK}
 	 */
-	public Response() {
+	public WorksResponse() {
 		// maybe a 500 by default instead
 		this.statusCode = SC_200_OK;
 		this.charset = "UTF-8";
@@ -133,14 +133,14 @@ public class Response {
 
 	/**
 	 * A Response. Sets utf-8 as charset and status code by default. Refer to
-	 * {@link Response#SC_200_OK}, {@link Response#SC_204_NO_CONTENT} and so on
+	 * {@link WorksResponse#SC_200_OK}, {@link WorksResponse#SC_204_NO_CONTENT} and so on
 	 * for some short cuts to predefined results.
 	 *
 	 * @param statusCode
 	 *            The status code to set for the Response. Shortcuts to the code
-	 *            at: {@link Response#SC_200_OK}
+	 *            at: {@link WorksResponse#SC_200_OK}
 	 */
-	public Response(int statusCode) {
+	public WorksResponse(int statusCode) {
 
 		this.statusCode = statusCode;
 		this.charset = "utf-8";
@@ -171,12 +171,12 @@ public class Response {
 	 *            Set the charset of the Response. Is "utf-8" by default.
 	 * @return The Response for chaining.
 	 */
-	public Response setCharset(String charset) {
+	public WorksResponse setCharset(String charset) {
 		this.charset = charset;
 		return this;
 	}
 
-	public Response addHeader(String headerName, String headerContent) {
+	public WorksResponse addHeader(String headerName, String headerContent) {
 
 		headers.put(headerName, headerContent);
 		return this;
@@ -204,12 +204,12 @@ public class Response {
 		return cookies;
 	}
 
-	public Response addCookie(Cookie cookie) {
+	public WorksResponse addCookie(Cookie cookie) {
 		cookies.add(cookie);
 		return this;
 	}
 
-	public Response unsetCookie(String name) {
+	public WorksResponse unsetCookie(String name) {
 		// TODO get the cookie and remove the values
 		l.error("unset cookie does nothing : not yet implemented");
 		return this;
@@ -220,16 +220,16 @@ public class Response {
 	}
 
 	/**
-	 * Set the status of this Response. Refer to {@link Response#SC_200_OK},
-	 * {@link Response#SC_204_NO_CONTENT} and so on for some short cuts to
+	 * Set the status of this Response. Refer to {@link WorksResponse#SC_200_OK},
+	 * {@link WorksResponse#SC_204_NO_CONTENT} and so on for some short cuts to
 	 * predefined results.
 	 *
 	 * @param statusCode
-	 *            The status code. Response ({@link Response#SC_200_OK})
+	 *            The status code. Response ({@link WorksResponse#SC_200_OK})
 	 *            provides some helpers.
 	 * @return The Response you executed the method on for method chaining.
 	 */
-	public Response setStatus(int statusCode) {
+	public WorksResponse setStatus(int statusCode) {
 		this.statusCode = statusCode;
 		return this;
 	}
@@ -247,23 +247,23 @@ public class Response {
 	 *            views/AnotherController/anotherview.ftl.html
 	 * @return The Response that you executed the method on for chaining.
 	 */
-	public Response setTemplate(String template) {
+	public WorksResponse setTemplate(String template) {
 		this.template = template;
 		return this;
 	}
 
-	public Response serve404() {
-		setStatus(Response.SC_404_NOT_FOUND);
+	public WorksResponse serve404() {
+		setStatus(WorksResponse.SC_404_NOT_FOUND);
 		return this;
 	}
 
-	public Response serve500() {
-		setStatus(Response.SC_500_INTERNAL_SERVER_ERROR);
+	public WorksResponse serve500() {
+		setStatus(WorksResponse.SC_500_INTERNAL_SERVER_ERROR);
 		return this;
 	}
 
-	public Response serve403() {
-		setStatus(Response.SC_403_FORBIDDEN);
+	public WorksResponse serve403() {
+		setStatus(WorksResponse.SC_403_FORBIDDEN);
 		return this;
 	}
 
@@ -275,10 +275,10 @@ public class Response {
 	 * @return A nicely configured Response with status code 303 and the url set
 	 *         as Location header.
 	 */
-	public Response redirect(String url) {
+	public WorksResponse redirect(String url) {
 
-		setStatus(Response.SC_303_SEE_OTHER);
-		addHeader(Response.LOCATION, url);
+		setStatus(WorksResponse.SC_303_SEE_OTHER);
+		addHeader(WorksResponse.LOCATION, url);
 
 		return this;
 	}
@@ -291,72 +291,72 @@ public class Response {
 	 * @return A nicely configured Response with status code 307 and the url set
 	 *         as Location header.
 	 */
-	public Response redirectTemporary(String url) {
+	public WorksResponse redirectTemporary(String url) {
 
-		setStatus(Response.SC_307_TEMPORARY_REDIRECT);
-		addHeader(Response.LOCATION, url);
+		setStatus(WorksResponse.SC_307_TEMPORARY_REDIRECT);
+		addHeader(WorksResponse.LOCATION, url);
 
 		return this;
 	}
 
 	/**
-	 * Set the content type of this Response to {@link Response#TEXT_HTML}.
+	 * Set the content type of this Response to {@link WorksResponse#TEXT_HTML}.
 	 *
 	 * @return the same Response where you executed this method on. But the
-	 *         content type is now {@link Response#TEXT_HTML}.
+	 *         content type is now {@link WorksResponse#TEXT_HTML}.
 	 */
-	public Response html() {
+	public WorksResponse html() {
 		contentType = TEXT_HTML;
 		return this;
 	}
 
 	/**
 	 * Set the content type of this Response to
-	 * {@link Response#APPLICATION_JSON}.
+	 * {@link WorksResponse#APPLICATION_JSON}.
 	 *
 	 * @return the same Response where you executed this method on. But the
-	 *         content type is now {@link Response#APPLICATION_JSON}.
+	 *         content type is now {@link WorksResponse#APPLICATION_JSON}.
 	 */
-	public Response json() {
+	public WorksResponse json() {
 		contentType = APPLICATION_JSON;
 		return this;
 	}
 
 	/**
 	 * Set the content type of this Response to
-	 * {@link Response#APPLICATION_JSONP}.
+	 * {@link WorksResponse#APPLICATION_JSONP}.
 	 *
 	 * @return the same Response where you executed this method on. But the
-	 *         content type is now {@link Response#APPLICATION_JSONP}.
+	 *         content type is now {@link WorksResponse#APPLICATION_JSONP}.
 	 */
-	public Response jsonp() {
+	public WorksResponse jsonp() {
 		contentType = APPLICATION_JSONP;
 		return this;
 	}
 
 	/**
-	 * Set the content type of this Response to {@link Response#TEXT_PLAIN}.
+	 * Set the content type of this Response to {@link WorksResponse#TEXT_PLAIN}.
 	 *
 	 * @return the same Response where you executed this method on. But the
-	 *         content type is now {@link Response#TEXT_PLAIN}.
+	 *         content type is now {@link WorksResponse#TEXT_PLAIN}.
 	 */
-	public Response text() {
+	public WorksResponse text() {
 		contentType = TEXT_PLAIN;
 		return this;
 	}
 
 	/**
-	 * Set the content type of this Response to {@link Response#APPLICATON_XML}.
+	 * Set the content type of this Response to {@link WorksResponse#APPLICATON_XML}.
 	 *
 	 * @return the same Response where you executed this method on. But the
-	 *         content type is now {@link Response#APPLICATON_XML}.
+	 *         content type is now {@link WorksResponse#APPLICATON_XML}.
 	 */
-	public Response xml() {
+	public WorksResponse xml() {
 		contentType = APPLICATION_XML;
 		return this;
 	}
 
-	public Response file() {
+	public WorksResponse file() {
 		contentType = APPLICATION_OCTET_STREAM;
 		return this;
 	}
@@ -376,7 +376,7 @@ public class Response {
 	 *
 	 * @return this Response for chaining.
 	 */
-	public Response doNotCacheContent() {
+	public WorksResponse doNotCacheContent() {
 
 		addHeader(CACHE_CONTROL, CACHE_CONTROL_DEFAULT_NOCACHE_VALUE);
 		addHeader(DATE, DateUtil.formatForHttpHeader(System.currentTimeMillis()));

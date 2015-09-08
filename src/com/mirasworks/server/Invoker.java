@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mirasworks.module.files.StaticFileModule;
-import com.mirasworks.module.mvc.Response;
+import com.mirasworks.module.mvc.WorksResponse;
 import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.exceptions.Ex403Forbiden;
 import com.mirasworks.server.http.exceptions.ExNotMe;
@@ -22,7 +22,7 @@ public class Invoker {
 
 	}
 
-	public Response invoke(WorksRequest request) {
+	public WorksResponse invoke(WorksRequest request) {
 
 		/**
 		 * ^((http[s]?|ftp):\/)?\/?([^:\/\s]+)((\/\w+)*\/)([\w\-\.]+[^#?\s]+)(.*
@@ -34,16 +34,16 @@ public class Invoker {
 
 		try {
 
-			ControllerInvokerModule controllerInvoker = new ControllerInvokerModule(context);
+			ControllerInvokerModule controllerModule = new ControllerInvokerModule(context);
 			try {
-				return controllerInvoker.serve(request);
+				return controllerModule.serve(request);
 			} catch (ExNotMe e) {
 				// nothing to do who's next ?
 			}
 
-			StaticFileModule staticInvoker = new StaticFileModule(context);
+			StaticFileModule staticModule = new StaticFileModule(context);
 			try {
-				return staticInvoker.serve(request);
+				return staticModule.serve(request);
 			} catch (ExNotMe e) {
 				// nothing to do who's next ?
 			}
@@ -58,10 +58,10 @@ public class Invoker {
 
 	}
 
-	private Response serveForbiden(WorksRequest request, Exception e) {
+	private WorksResponse serveForbiden(WorksRequest request, Exception e) {
 		// here better load a 500 or 404controller
 
-		Response response = new Response();
+		WorksResponse response = new WorksResponse();
 		// TODO use template instead
 		// TODO make template path configurable
 
@@ -78,9 +78,9 @@ public class Invoker {
 		return response;
 	}
 
-	private Response serve500(WorksRequest request, Exception e) {
+	private WorksResponse serve500(WorksRequest request, Exception e) {
 
-		Response response = new Response();
+		WorksResponse response = new WorksResponse();
 		// TODO use template instead
 		// TODO make template path configurable
 
@@ -97,9 +97,9 @@ public class Invoker {
 		return response;
 	}
 
-	public Response serve404(WorksRequest request) {
+	public WorksResponse serve404(WorksRequest request) {
 
-		Response response = new Response();
+		WorksResponse response = new WorksResponse();
 		// TODO use template instead
 		// TODO make template path configurable
 

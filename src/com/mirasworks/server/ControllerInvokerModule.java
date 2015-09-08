@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mirasworks.module.mvc.Controller;
-import com.mirasworks.module.mvc.Response;
+import com.mirasworks.module.mvc.WorksResponse;
 import com.mirasworks.module.mvc.TemplateEngineBridge;
 import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.exceptions.Ex403Forbiden;
@@ -32,13 +32,13 @@ public class ControllerInvokerModule implements Imodule {
 
 	}
 
-	public Response serve404(Throwable e) throws ExNotMe {
+	public WorksResponse serve404(Throwable e) throws ExNotMe {
 		// quick refacto
 		throw new ExNotMe(e);
 
 	}
 
-	public Response serve(WorksRequest request) throws ExNotMe, Ex500, Ex403Forbiden {
+	public WorksResponse serve(WorksRequest request) throws ExNotMe, Ex500, Ex403Forbiden {
 
 		Route route = new Route(request);
 
@@ -138,7 +138,7 @@ public class ControllerInvokerModule implements Imodule {
 
 			}
 
-			Response response = controller.getResponse();
+			WorksResponse response = controller.getResponse();
 			return response;
 
 		} else {

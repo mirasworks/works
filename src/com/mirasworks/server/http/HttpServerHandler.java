@@ -29,12 +29,13 @@ import org.jboss.netty.handler.codec.http.CookieEncoder;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mirasworks.module.mvc.Response;
+import com.mirasworks.module.mvc.WorksResponse;
 import com.mirasworks.server.Context;
 import com.mirasworks.server.Invoker;
 
@@ -132,10 +133,10 @@ public class HttpServerHandler extends SimpleChannelUpstreamHandler {
         // Decide whether to close the connection or not
 
         boolean keepAlive = isKeepAlive(worksRequest);
-        Response WorksResponse = null;
         // Build the response object.
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
 
+        WorksResponse WorksResponse = null;
         Invoker invoker = new Invoker(context);
         WorksResponse = invoker.invoke(worksRequest);
 
@@ -146,7 +147,6 @@ public class HttpServerHandler extends SimpleChannelUpstreamHandler {
         contentType.append(WorksResponse.getContentType());
         contentType.append("; charset=");
         contentType.append(WorksResponse.getCharset());
-
         response.headers().set(CONTENT_TYPE, contentType.toString());
 
         if (keepAlive) {
@@ -158,37 +158,15 @@ public class HttpServerHandler extends SimpleChannelUpstreamHandler {
             response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
-        // Encode the cookie.
-        String cookieString = worksRequest.headers().get(COOKIE);
-        if (cookieString != null) {
-            CookieDecoder cookieDecoder = new CookieDecoder();
-            Set<Cookie> cookies = cookieDecoder.decode(cookieString);
-            if (!cookies.isEmpty()) {
-                // Reset the cookies if necessary.
-                CookieEncoder cookieEncoder = new CookieEncoder(true);
-                for (Cookie cookie : cookies) {
-                    cookieEncoder.addCookie(cookie);
-                    response.headers().add(SET_COOKIE, cookieEncoder.encode());
-                }
-            }
-        } else {
-            // Browser sent no cookie. Add some.
-            CookieEncoder cookieEncoder = new CookieEncoder(true);
-            // TODO cookie must be implemented 
-            response.headers().add(SET_COOKIE, cookieEncoder.encode());
-            cookieEncoder.addCookie("key1", "value3");
-            response.headers().add(SET_COOKIE, cookieEncoder.encode());
-        }
 
-        // Write the response.
+        //write and close if not keep alive 
         ChannelFuture future = messageEvent.getChannel().write(response);
-
-        // Close the non-keep-alive connection after the write operation is
-        // done.
         if (!keepAlive) {
             future.addListener(ChannelFutureListener.CLOSE);
         }
     }
+    
+
 
     private static void send100Continue(MessageEvent e) {
         HttpResponse response = new DefaultHttpResponse(HTTP_1_1, CONTINUE);

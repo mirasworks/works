@@ -15,13 +15,13 @@ public class Controller {
     private final Logger l = LoggerFactory.getLogger(Controller.class);
 
     String content = "";
-    protected Response response = null;
+    protected WorksResponse response = null;
     private String templatePath = null;
     private Map<String, Object> view = new HashMap<String, Object>();
     private TemplateEngineBridge templateEngine;
 
     public Controller() {
-        response = new Response();
+        response = new WorksResponse();
     }
 
     public void setTemplateEngine(TemplateEngineBridge templateEngine) {
@@ -44,7 +44,7 @@ public class Controller {
 
 
 
-    public Response getResponse() {
+    public WorksResponse getResponse() {
 
 
         // TODO monitor the template's changes, if it changes it must be
