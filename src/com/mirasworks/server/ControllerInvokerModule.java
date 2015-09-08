@@ -46,6 +46,7 @@ public class ControllerInvokerModule implements Imodule {
 		if(route.getControllerName().contains(".")) {
 			throw new ExNotMe();
 		}
+		
 
 		classPathBuff.append(route.getControllerName());
 		classPathBuff.append(controllerSuffix);
@@ -56,7 +57,7 @@ public class ControllerInvokerModule implements Imodule {
 		Class<?> clazz;
 		Constructor<?> ctor;
 
-		l.info("try to invoque [{}]", classPath);
+		l.info("try to invoque [{}] with request : {}", classPath, request);
 
 		try {
 			clazz = Class.forName(classPath);

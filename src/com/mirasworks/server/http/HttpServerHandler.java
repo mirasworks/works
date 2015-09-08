@@ -106,8 +106,6 @@ public class HttpServerHandler extends SimpleChannelUpstreamHandler {
 
                 }
 
-                l.info("decoded http request: {}", worksRequest);
-                // TODO fix called twice
                 writeResponse(e);
             }
         } else {
@@ -152,9 +150,8 @@ public class HttpServerHandler extends SimpleChannelUpstreamHandler {
         if (keepAlive) {
             // Add 'Content-Length' header only for a keep-alive connection.
             response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
-            // Add keep alive header as per:
-            // -
-            // http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#Connection
+			// Add keep alive header as per:
+			// http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#Connection
             response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 

@@ -26,8 +26,6 @@ public class Route {
         String uri  = request.getUri();
         String[] uriChunk = request.getUri().split("/");
 
-        l.info("uri in route resolver: {}", uri);
-
         int lenght = uriChunk.length;
         if (lenght > 1) {
             controllerName = StringUtils.capitalize(uriChunk[1]);
@@ -40,7 +38,6 @@ public class Route {
     }
 
     public String getControllerName() {
-        l.info(controllerName);
         controllerName = StringUtils.capitalize(controllerName);
         return controllerName;
     }
