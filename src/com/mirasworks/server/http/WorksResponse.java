@@ -23,11 +23,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
+import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,31 +37,8 @@ import com.mirasworks.util.DateUtil;
  * @author modified from jetty rewrite still in progress
  *
  */
-public class WorksResponse {
+public class WorksResponse extends DefaultHttpResponse {
 	private final Logger l = LoggerFactory.getLogger(WorksResponse.class);
-
-	// /////////////////////////////////////////////////////////////////////////
-	// HTTP Status codes (for convenience)
-	// /////////////////////////////////////////////////////////////////////////
-	public static final int SC_200_OK = 200;
-	public static final int SC_201_CREATED = 201;
-	public static final int SC_204_NO_CONTENT = 204;
-
-	// for redirects:
-	public static final int SC_300_MULTIPLE_CHOICES = 300;
-	public static final int SC_301_MOVED_PERMANENTLY = 301;
-	public static final int SC_302_FOUND = 302;
-	public static final int SC_303_SEE_OTHER = 303;
-	public static final int SC_304_NOT_MODIFIED = 304;
-	public static final int SC_307_TEMPORARY_REDIRECT = 307;
-
-	public static final int SC_400_BAD_REQUEST = 400;
-	public static final int SC_401_UNAUTHORIZED = 401;
-	public static final int SC_403_FORBIDDEN = 403;
-	public static final int SC_404_NOT_FOUND = 404;
-
-	public static final int SC_500_INTERNAL_SERVER_ERROR = 500;
-	public static final int SC_501_NOT_IMPLEMENTED = 501;
 
 	// /////////////////////////////////////////////////////////////////////////
 	// Some MIME types (for convenience)
@@ -96,51 +71,28 @@ public class WorksResponse {
 
 	private String charset;
 
-	private Map<String, String> headers;
-
 	private List<Cookie> cookies;
 
 	private String template;
-	private HttpVersion version;
 
 	// TODO make a getter setter
 	public ByteArrayOutputStream out;
 
-	private HttpResponseStatus status;
-
-	public WorksResponse(HttpResponseStatus status) {
-
-		this();
-		// always 1.1 it will not changes tomorrow
-		setVersion(HTTP_1_1);
-		setStatus(status);
-		
-	}
 
 	public WorksResponse() {
+		super(HTTP_1_1, HttpResponseStatus.OK);
 		this.charset = "UTF-8";
-		this.headers = new TreeMap<String, String>();
 		this.cookies = new ArrayList<Cookie>();
 	}
 
-	public HttpResponseStatus getStatus() {
-		return status;
+	public WorksResponse(HttpResponseStatus status) {
+
+		super(HTTP_1_1, status);
+		this.charset = "UTF-8";
+		this.cookies = new ArrayList<Cookie>();
 	}
 
-	public WorksResponse setStatus(HttpResponseStatus status) {
-		if (status == null) {
-			throw new NullPointerException("status");
-		}
-		this.status = status;
-		return this;
-	}
 
-	public void setVersion(HttpVersion version) {
-		if (version == null) {
-			throw new NullPointerException("version");
-		}
-		this.version = version;
-	}
 
 	public String getContentType() {
 		return contentType;
@@ -161,12 +113,6 @@ public class WorksResponse {
 	 */
 	public WorksResponse setCharset(String charset) {
 		this.charset = charset;
-		return this;
-	}
-
-	public WorksResponse addHeader(String headerName, String headerContent) {
-
-		headers.put(headerName, headerContent);
 		return this;
 	}
 
@@ -232,7 +178,7 @@ public class WorksResponse {
 	public WorksResponse redirect(String url) {
 
 		setStatus(HttpResponseStatus.SEE_OTHER);
-		addHeader(WorksResponse.LOCATION, url);
+		headers().add(WorksResponse.LOCATION, url);
 
 		return this;
 	}
@@ -248,29 +194,30 @@ public class WorksResponse {
 	public WorksResponse redirectTemporary(String url) {
 
 		setStatus(HttpResponseStatus.TEMPORARY_REDIRECT);
-		addHeader(WorksResponse.LOCATION, url);
+		headers().add(WorksResponse.LOCATION, url);
 
 		return this;
 	}
 
 	/**
 	 * Set the content type of this Response to {@link WorksResponse#TEXT_HTML}.
-	 * @param string 
+	 * 
+	 * @param string
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#TEXT_HTML}.
-	 * @throws Ex500 
+	 * @throws Ex500
 	 */
 	public WorksResponse html(String html) throws Ex500 {
 		contentType = TEXT_HTML;
 		// TODO use template instead
 		// TODO make template path configurable
 		return writeString(html);
-		
+
 	}
-	
-	private  WorksResponse writeString(String string) throws Ex500 {
-	
+
+	private WorksResponse writeString(String string) throws Ex500 {
+
 		try {
 			out = new ByteArrayOutputStream();
 			out.write(string.getBytes("UTF-8"));
@@ -278,10 +225,10 @@ public class WorksResponse {
 			throw new Ex500("unable to write html beacause of bad encoding", e.getCause());
 		} catch (IOException e) {
 			throw new Ex500("unable to write content beacause of io error", e.getCause());
-		}finally {
-			//TODO Close
+		} finally {
+			// TODO Close
 		}
-		
+
 		return this;
 	}
 
@@ -312,11 +259,12 @@ public class WorksResponse {
 	/**
 	 * Set the content type of this Response to {@link WorksResponse#TEXT_PLAIN}
 	 * .
-	 * @param string 
+	 * 
+	 * @param string
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#TEXT_PLAIN}.
-	 * @throws Ex500 
+	 * @throws Ex500
 	 */
 	public WorksResponse text(String text) throws Ex500 {
 		contentType = TEXT_PLAIN;
@@ -353,9 +301,9 @@ public class WorksResponse {
 	 */
 	public WorksResponse doNotCacheContent() {
 
-		addHeader(CACHE_CONTROL, CACHE_CONTROL_DEFAULT_NOCACHE_VALUE);
-		addHeader(DATE, DateUtil.formatForHttpHeader(System.currentTimeMillis()));
-		addHeader(EXPIRES, DateUtil.formatForHttpHeader(0L));
+		headers().add(CACHE_CONTROL, CACHE_CONTROL_DEFAULT_NOCACHE_VALUE);
+		headers().add(DATE, DateUtil.formatForHttpHeader(System.currentTimeMillis()));
+		headers().add(EXPIRES, DateUtil.formatForHttpHeader(0L));
 
 		return this;
 

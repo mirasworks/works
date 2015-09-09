@@ -55,7 +55,7 @@ public abstract class MessageEncoder extends OneToOneEncoder {
 					// check if the Transfer-Encoding is set to chunked already.
 					// if not add the header to the message
 					if (!isTransferEncodingChunked(m)) {
-						m.addHeader(Names.TRANSFER_ENCODING, Values.CHUNKED);
+						m.headers().add(Names.TRANSFER_ENCODING, Values.CHUNKED);
 					}
 					contentMustBeEmpty = true;
 					transferEncodingChunked = true;

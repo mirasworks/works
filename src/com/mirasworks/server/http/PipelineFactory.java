@@ -41,8 +41,8 @@ public class PipelineFactory implements ChannelPipelineFactory {
 		// pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
 		// TODO rewrite the httpResponse encoder to handle a worksResponse and
 		// avoid the copy
-		pipeline.addLast("handler", httpServerHandler);
 		pipeline.addLast("encoder", new ResponseEncoder());
+		pipeline.addLast("handler", httpServerHandler);
 		// Remove the following line if you don't want automatic content
 		// compression.
 		// pipeline.addLast("deflater", new HttpContentCompressor());

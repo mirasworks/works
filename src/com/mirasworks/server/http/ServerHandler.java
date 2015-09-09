@@ -125,32 +125,32 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 
         boolean keepAlive = isKeepAlive(worksRequest);
         // Build the response object.
-        HttpResponse response = new DefaultHttpResponse(HTTP_1_1, OK);
 
         WorksResponse WorksResponse = null;
         Invoker invoker = new Invoker(context);
         WorksResponse = invoker.invoke(worksRequest);
 
         
-        response.setContent(ChannelBuffers.copiedBuffer(WorksResponse.out.toByteArray()));
+        //TODO do it in it
+        WorksResponse.setContent(ChannelBuffers.copiedBuffer(WorksResponse.out.toByteArray()));
 
         StringBuffer contentType = new StringBuffer();
         contentType.append(WorksResponse.getContentType());
         contentType.append("; charset=");
         contentType.append(WorksResponse.getCharset());
-        response.headers().set(CONTENT_TYPE, contentType.toString());
+        WorksResponse.headers().set(CONTENT_TYPE, contentType.toString());
 
         if (keepAlive) {
             // Add 'Content-Length' header only for a keep-alive connection.
-            response.headers().set(CONTENT_LENGTH, response.getContent().readableBytes());
+        	WorksResponse.headers().set(CONTENT_LENGTH, WorksResponse.getContent().readableBytes());
 			// Add keep alive header as per:
 			// http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#Connection
-            response.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+        	WorksResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
         }
 
 
         //write and close if not keep alive 
-        ChannelFuture future = messageEvent.getChannel().write(response);
+        ChannelFuture future = messageEvent.getChannel().write(WorksResponse);
         if (!keepAlive) {
             future.addListener(ChannelFutureListener.CLOSE);
         }
@@ -166,7 +166,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
         if (this == ctx.getPipeline().getLast()) {
-            l.warn("http handler has closed a connection cause {}", e.getCause(), e);
+            l.error("http handler has closed a connection cause {} {} {}", e.getCause(), e);
         }
         ctx.sendUpstream(e);
     }
