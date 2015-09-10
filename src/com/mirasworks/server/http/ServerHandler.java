@@ -53,21 +53,13 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 
         // TODO create a security handeler to catch too long request
         // TODO handle file content type
-        // TODO close the handler as soon as possible with use of future
         // TODO request and cookie
         // could be used to upload png etc
-        // wrap a new request and close the handler
 
         if (readingChunks == false) {
-            // TODO may be consider to directly create a WorksRequest
-            /**
-             * @see RequestDecoder
-             *
-             * @see DefaultHttpRequest
-             */
-            this.worksRequest = (WorksRequest) e.getMessage();
-            l.info("{}",worksRequest);
-
+          
+        	this.worksRequest = (WorksRequest) e.getMessage();
+          
             if (is100ContinueExpected(worksRequest)) {
                 send100Continue(e);
             }
@@ -75,7 +67,8 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
             // important the buff is reused along the new requests instead
             strBuff.setLength(0);
 
-            // TODO may consider a thread safe pool of queryStringdecoder
+            // TODO may consider a thread safe pool of queryStringdecoder.
+            // 
             QueryStringDecoder queryStringDecoder = new QueryStringDecoder(worksRequest.getUri());
             Map<String, List<String>> params = queryStringDecoder.getParameters();
 
@@ -121,31 +114,18 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
     }
 
     private void writeResponse(MessageEvent messageEvent) {
-        // Decide whether to close the connection or not
 
+    	// Decide whether to close the connection or not
         boolean keepAlive = isKeepAlive(worksRequest);
-        // Build the response object.
 
+        // let the framework build the response object.
         WorksResponse WorksResponse = null;
         Invoker invoker = new Invoker(context);
         WorksResponse = invoker.invoke(worksRequest);
 
-        
-        //TODO do it in it
-        WorksResponse.setContent(ChannelBuffers.copiedBuffer(WorksResponse.out.toByteArray()));
-
-        StringBuffer contentType = new StringBuffer();
-        contentType.append(WorksResponse.getContentType());
-        contentType.append("; charset=");
-        contentType.append(WorksResponse.getCharset());
-        WorksResponse.headers().set(CONTENT_TYPE, contentType.toString());
 
         if (keepAlive) {
-            // Add 'Content-Length' header only for a keep-alive connection.
-        	WorksResponse.headers().set(CONTENT_LENGTH, WorksResponse.getContent().readableBytes());
-			// Add keep alive header as per:
-			// http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#Connection
-        	WorksResponse.headers().set(CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+        	WorksResponse.setKeepAliveHeaders();
         }
 
 

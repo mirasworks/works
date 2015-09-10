@@ -16,6 +16,9 @@
 
 package com.mirasworks.server.http;
 
+//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
+//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
+//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import java.io.ByteArrayOutputStream;
@@ -24,12 +27,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mirasworks.server.http.exceptions.Ex500;
+import com.mirasworks.start.Application;
 import com.mirasworks.util.DateUtil;
 
 /**
@@ -46,17 +52,11 @@ public class WorksResponse extends DefaultHttpResponse {
 	public static final String TEXT_HTML = "text/html";
 	public static final String TEXT_PLAIN = "text/plain";
 	public static final String APPLICATION_JSON = "application/json";
-	/* @deprecated Naming mistake - Please use APPLICATION_JSON instead! */
-
 	public static final String APPLICATION_JSONP = "application/javascript";
-	/* @deprecated Naming mistake - Please use APPLICATION_JSONP instead! */
-
 	public static final String APPLICATION_XML = "application/xml";
 	public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
 
-	// /////////////////////////////////////////////////////////////////////////
-	// Finally we got to the core of this class...
-	// /////////////////////////////////////////////////////////////////////////
+
 	/* Used as redirection header */
 	public static final String LOCATION = "Location";
 	public static final String CACHE_CONTROL = "Cache-Control";
@@ -66,8 +66,9 @@ public class WorksResponse extends DefaultHttpResponse {
 	public static final String EXPIRES = "Expires";
 
 	public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
+	public static final String defaultCharset = Application.getConfig().getKey("charset", "UTF-8");
 
-	private String contentType;
+	// private String contentType;
 
 	private String charset;
 
@@ -76,26 +77,41 @@ public class WorksResponse extends DefaultHttpResponse {
 	private String template;
 
 	// TODO make a getter setter
-	public ByteArrayOutputStream out;
-
+	public ByteArrayOutputStream bytearrayOutputStream;
 
 	public WorksResponse() {
 		super(HTTP_1_1, HttpResponseStatus.OK);
-		this.charset = "UTF-8";
+		this.charset = defaultCharset;
 		this.cookies = new ArrayList<Cookie>();
 	}
 
 	public WorksResponse(HttpResponseStatus status) {
 
 		super(HTTP_1_1, status);
-		this.charset = "UTF-8";
+		this.charset = defaultCharset;
 		this.cookies = new ArrayList<Cookie>();
 	}
 
+	private WorksResponse writeString(String string) throws Ex500 {
 
+		try {
+			bytearrayOutputStream = new ByteArrayOutputStream();
+			bytearrayOutputStream.write(string.getBytes(getCharset()));
+			setContent(ChannelBuffers.copiedBuffer(bytearrayOutputStream.toByteArray()));
+		} catch (UnsupportedEncodingException e) {
+			throw new Ex500("unable to write html beacause of bad encoding", e.getCause());
+		} catch (IOException e) {
+			throw new Ex500("unable to write content beacause of io error", e.getCause());
+		} finally {
+			// TODO Close
+			try {
+				bytearrayOutputStream.close();
+			} catch (IOException e) {
 
-	public String getContentType() {
-		return contentType;
+			}
+		}
+
+		return this;
 	}
 
 	/**
@@ -154,8 +170,33 @@ public class WorksResponse extends DefaultHttpResponse {
 	}
 
 	/**
+	 * Set content type for char text typed content type
+	 * 
+	 * @param contentType
+	 */
+	private void setCharContentType(String contentType) {
+		StringBuffer contentTypeStrb = new StringBuffer();
+		contentTypeStrb.append(contentType);
+		contentTypeStrb.append("; charset=");
+		contentTypeStrb.append(getCharset());
+		headers().set(HttpHeaders.Names.CONTENT_TYPE, contentTypeStrb.toString());
+	}
+
+	/**
+	 * for keepAlive only content Add 'Content-Length' header only for a
+	 * keep-alive connection. Add keep alive header as per Connection: <a href
+	 * ="http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#">
+	 * rfc 2616</a> 
+	 */
+	public void setKeepAliveHeaders() {
+
+		headers().set(HttpHeaders.Names.CONTENT_LENGTH, getContent().readableBytes());
+		headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+	}
+
+	/**
 	 * Set the template to render. For instance
-	 * template("views/AnotherController/anotherview.ftl.html");
+	 * template("views/AnotherController/anotherview.html");
 	 *
 	 * @param template
 	 *            The view to render. Eg.
@@ -209,27 +250,11 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @throws Ex500
 	 */
 	public WorksResponse html(String html) throws Ex500 {
-		contentType = TEXT_HTML;
+		setCharContentType(TEXT_HTML);
 		// TODO use template instead
 		// TODO make template path configurable
 		return writeString(html);
 
-	}
-
-	private WorksResponse writeString(String string) throws Ex500 {
-
-		try {
-			out = new ByteArrayOutputStream();
-			out.write(string.getBytes("UTF-8"));
-		} catch (UnsupportedEncodingException e) {
-			throw new Ex500("unable to write html beacause of bad encoding", e.getCause());
-		} catch (IOException e) {
-			throw new Ex500("unable to write content beacause of io error", e.getCause());
-		} finally {
-			// TODO Close
-		}
-
-		return this;
 	}
 
 	/**
@@ -240,7 +265,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	 *         content type is now {@link WorksResponse#APPLICATION_JSON}.
 	 */
 	public WorksResponse json() {
-		contentType = APPLICATION_JSON;
+		setCharContentType(APPLICATION_JSON);
 		return this;
 	}
 
@@ -252,7 +277,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	 *         content type is now {@link WorksResponse#APPLICATION_JSONP}.
 	 */
 	public WorksResponse jsonp() {
-		contentType = APPLICATION_JSONP;
+		setCharContentType(APPLICATION_JSONP);
 		return this;
 	}
 
@@ -267,7 +292,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @throws Ex500
 	 */
 	public WorksResponse text(String text) throws Ex500 {
-		contentType = TEXT_PLAIN;
+		setCharContentType(TEXT_PLAIN);
 		writeString(text);
 		return this;
 	}
@@ -280,7 +305,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	 *         content type is now {@link WorksResponse#APPLICATON_XML}.
 	 */
 	public WorksResponse xml() {
-		contentType = APPLICATION_XML;
+		setCharContentType(APPLICATION_XML);
 		return this;
 	}
 
