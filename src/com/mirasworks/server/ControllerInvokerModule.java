@@ -31,11 +31,7 @@ public class ControllerInvokerModule implements Imodule {
 
 	}
 
-	public WorksResponse serve404(Throwable e) throws ExNotMe {
-		// quick refacto
-		throw new ExNotMe(e);
 
-	}
 
 	public WorksResponse serve(WorksRequest request) throws ExNotMe, Ex500, Ex403Forbiden {
 
@@ -43,7 +39,7 @@ public class ControllerInvokerModule implements Imodule {
 
 		// TODO rather do an alphaNum pattern matcher
 		if (route.getControllerName().contains(".") || route.getMethodName().contains(".") ) {
-			throw new ExNotMe();
+			throw new ExNotMe("route contains dots");
 		}
 
 		classPathBuff.append(route.getControllerName());
@@ -55,7 +51,7 @@ public class ControllerInvokerModule implements Imodule {
 		Class<?> clazz;
 		Constructor<?> ctor;
 
-		l.info("try to invoque [{}] with request : {}", classPath, request);
+		l.debug("try to invoque [{}] with request : {}", classPath, request);
 
 		try {
 			clazz = Class.forName(classPath);

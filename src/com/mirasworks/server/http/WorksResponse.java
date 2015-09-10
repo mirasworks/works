@@ -16,16 +16,23 @@
 
 package com.mirasworks.server.http;
 
-//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONNECTION;
-//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_LENGTH;
-//import static org.jboss.netty.handler.codec.http.HttpHeaders.Names.CONTENT_TYPE;
 import static org.jboss.netty.handler.codec.http.HttpVersion.HTTP_1_1;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
@@ -46,6 +53,10 @@ import com.mirasworks.util.DateUtil;
 public class WorksResponse extends DefaultHttpResponse {
 	private final Logger l = LoggerFactory.getLogger(WorksResponse.class);
 
+	static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
+	static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
+	static final int HTTP_CACHE_SECONDS = 60;
+
 	// /////////////////////////////////////////////////////////////////////////
 	// Some MIME types (for convenience)
 	// /////////////////////////////////////////////////////////////////////////
@@ -55,7 +66,6 @@ public class WorksResponse extends DefaultHttpResponse {
 	public static final String APPLICATION_JSONP = "application/javascript";
 	public static final String APPLICATION_XML = "application/xml";
 	public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
-
 
 	/* Used as redirection header */
 	public static final String LOCATION = "Location";
@@ -68,8 +78,6 @@ public class WorksResponse extends DefaultHttpResponse {
 	public static final String WWW_AUTHENTICATE = "WWW-Authenticate";
 	public static final String defaultCharset = Application.getConfig().getKey("charset", "UTF-8");
 
-	// private String contentType;
-
 	private String charset;
 
 	private List<Cookie> cookies;
@@ -78,6 +86,7 @@ public class WorksResponse extends DefaultHttpResponse {
 
 	// TODO make a getter setter
 	public ByteArrayOutputStream bytearrayOutputStream;
+	private RandomAccessFile randomAcessFile = null;
 
 	public WorksResponse() {
 		super(HTTP_1_1, HttpResponseStatus.OK);
@@ -103,7 +112,6 @@ public class WorksResponse extends DefaultHttpResponse {
 		} catch (IOException e) {
 			throw new Ex500("unable to write content beacause of io error", e.getCause());
 		} finally {
-			// TODO Close
 			try {
 				bytearrayOutputStream.close();
 			} catch (IOException e) {
@@ -186,11 +194,17 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * for keepAlive only content Add 'Content-Length' header only for a
 	 * keep-alive connection. Add keep alive header as per Connection: <a href
 	 * ="http://www.w3.org/Protocols/HTTP/1.1/draft-ietf-http-v11-spec-01.html#">
-	 * rfc 2616</a> 
+	 * rfc 2616</a>
 	 */
 	public void setKeepAliveHeaders() {
 
-		headers().set(HttpHeaders.Names.CONTENT_LENGTH, getContent().readableBytes());
+		long lenght = 0;
+		if(getRandomAcessFile() !=null) {
+			lenght = getFileLength();
+		} else {
+			lenght = getContent().readableBytes();
+		}
+		headers().set(HttpHeaders.Names.CONTENT_LENGTH, lenght);
 		headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
 	}
 
@@ -334,4 +348,71 @@ public class WorksResponse extends DefaultHttpResponse {
 
 	}
 
+	/**
+	 * Set date format to header for caching
+	 */
+	public void setDateHeader() {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+
+		Calendar time = new GregorianCalendar();
+		headers().set(DATE, dateFormatter.format(time.getTime()));
+	}
+
+	public RandomAccessFile getRandomAcessFile() {
+		return randomAcessFile;
+	}
+
+	private Long fileLength = null;
+
+	public Long getFileLength() {
+		return fileLength;
+	}
+
+	public void setFile(File file) throws IOException {
+
+		// this could throw fne
+		randomAcessFile = new RandomAccessFile(file, "r");
+
+		try {
+			fileLength = randomAcessFile.length();
+		} catch (IOException e) {
+			l.error("io on randomAccessFile.length", e);
+			try {
+				randomAcessFile.close();
+			} catch (IOException eio) {
+				l.error("can't close the randomAcessFile", eio);
+			}
+			throw e;
+		}
+		headers().set(HttpHeaders.Names.CONTENT_LENGTH, fileLength);
+		
+
+		Path path = file.toPath();
+		String contentType = Files.probeContentType(path);
+		headers().set(HttpHeaders.Names.CONTENT_TYPE, contentType);
+		setDateAndCacheHeaders(file);
+		
+	}
+
+	/**
+	 * Sets the Date and Cache headers for the HTTP Response
+	 *
+	 * @param fileToCache
+	 *            the file to extract content type
+	 */
+	private void setDateAndCacheHeaders(File fileToCache) {
+		SimpleDateFormat dateFormatter = new SimpleDateFormat(HTTP_DATE_FORMAT, Locale.US);
+		dateFormatter.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
+
+		// Date header
+		Calendar time = new GregorianCalendar();
+		headers().set(DATE, dateFormatter.format(time.getTime()));
+
+		// Add cache headers
+		time.add(Calendar.SECOND, HTTP_CACHE_SECONDS);
+		headers().set(EXPIRES, dateFormatter.format(time.getTime()));
+		headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
+		headers().set(HttpHeaders.Names.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
+	}
 }

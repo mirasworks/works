@@ -1,9 +1,5 @@
 package com.mirasworks.server;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,13 +36,14 @@ public class Invoker {
 			try {
 				return controllerModule.serve(request);
 			} catch (ExNotMe e) {
-				// nothing to do... who's next ?
+				l.debug("ControllerInvokerModule pass: {}",e.getMessage());				
 			}
 
 			StaticFileModule staticModule = new StaticFileModule(context);
 			try {
 				return staticModule.serve(request);
 			} catch (ExNotMe e) {
+				l.debug("StaticFileModule pass: {}");
 				// nothing to do... who's next ?
 			}
 
