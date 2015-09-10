@@ -36,14 +36,14 @@ public class Invoker {
 			try {
 				return controllerModule.serve(request);
 			} catch (ExNotMe e) {
-				l.debug("ControllerInvokerModule pass: {}",e.getMessage());				
+				l.debug("ControllerInvokerModule pass: {}", e.getMessage());
 			}
 
 			StaticFileModule staticModule = new StaticFileModule(context);
 			try {
 				return staticModule.serve(request);
 			} catch (ExNotMe e) {
-				l.debug("StaticFileModule pass: {}");
+				l.debug("StaticFileModule pass: {}", e.getMessage());
 				// nothing to do... who's next ?
 			}
 
@@ -60,9 +60,10 @@ public class Invoker {
 	private WorksResponse serveForbiden(WorksRequest request, Exception e) {
 		WorksResponse response = new WorksResponse(HttpResponseStatus.FORBIDDEN);
 		try {
+			// TODO if dev show message if not dev dont show it
 			response.html("<h1>forbidden 403</h1><br>" + e.getMessage());
 		} catch (Ex500 e1) {
-			l.error("{}",e1);
+			l.error("{}", e1);
 		}
 		return response;
 	}
@@ -70,9 +71,10 @@ public class Invoker {
 	private WorksResponse serve500(WorksRequest request, Exception e) {
 		WorksResponse response = new WorksResponse(HttpResponseStatus.INTERNAL_SERVER_ERROR);
 		try {
+			// TODO if dev show message if not dev dont show it
 			response.html("<h1>500</h1><br>" + e.getMessage());
 		} catch (Ex500 e1) {
-			l.error("{}",e1);
+			l.error("{}", e1);
 		}
 		return response;
 	}
@@ -83,7 +85,7 @@ public class Invoker {
 		try {
 			response.html("<h1>404</h1>");
 		} catch (Ex500 e) {
-			l.error("{}",e);
+			l.error("{}", e);
 		}
 		return response;
 
