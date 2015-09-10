@@ -31,6 +31,7 @@ import com.mirasworks.start.Application;
 
 public class StaticFileModule implements Imodule {
 
+	@SuppressWarnings("unused")
 	private final Logger l = LoggerFactory.getLogger(StaticFileModule.class);
 
 	static final String PUBLIC_DIR = Application.getConfig().getKey("public.directory", "public");
@@ -56,11 +57,11 @@ public class StaticFileModule implements Imodule {
 			throw new Ex403Forbiden();
 		}
 		if (!file.exists()) {
-			throw new ExNotMe("file does not exists : "+ path);
+			throw new ExNotMe("file does not exists : " + path);
 		}
 
 		if (!file.isFile()) {
-			throw new ExNotMe("not a file");
+			throw new ExNotMe("not a file :"+ path);
 		}
 
 		// Cache Validation
