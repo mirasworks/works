@@ -25,6 +25,13 @@ import org.jboss.netty.handler.codec.http.HttpMessage;
 import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
 import org.jboss.netty.util.CharsetUtil;
 
+/**
+ * 
+ * @author from netty frameworks
+ *    <pre>
+ * copied and modified from netty for convenience
+ *   </pre>
+ */
 public abstract class MessageEncoder extends OneToOneEncoder {
 
 	private static final byte[] CRLF = new byte[] { CR, LF };
