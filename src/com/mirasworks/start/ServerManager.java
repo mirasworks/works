@@ -40,7 +40,7 @@ public class ServerManager implements IServers {
     public void start() {
 
         System.setProperty("file.encoding", "utf-8");
-        l.info("try to start");
+        l.info("starting server");
 
         for (Map.Entry<String, IServer> server : servers.entrySet()) {
             server.getValue().start();
