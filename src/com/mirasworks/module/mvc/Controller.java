@@ -12,7 +12,7 @@ import com.mirasworks.server.http.WorksResponse;
 import com.mirasworks.server.http.exceptions.Ex500;
 
 public class Controller {
-	@SuppressWarnings("unused")
+	
 	private final Logger l = LoggerFactory.getLogger(Controller.class);
 
 	private String templatePath = null;
@@ -21,12 +21,19 @@ public class Controller {
 
 	private String html = "";
 	private String text = "";
+	private String json = "";
+	private String jsonp = "";
 
+
+
+	//TODO here use enum instead
 	private static final int RENDER_TEXT = 0;
-	private static final int RENDER_HTML = 2;
-	private static final int RENDER_TEMPLATE = 3;
+	private static final int RENDER_HTML = 1;
+	private static final int RENDER_TEMPLATE = 2;
+	private static final int RENDER_JSON = 3;
+	private static final int RENDER_JSONP = 4;
 
-	private int renderMode = RENDER_TEMPLATE;;
+	private int renderMode = RENDER_TEMPLATE;
 
 	public Controller() {
 
@@ -47,9 +54,10 @@ public class Controller {
 		// method
 		// TODO if the controller is session scoped or application scoped
 		// detect the caller method in dev mode and do the test in devmode only
-		if (this.renderMode != renderMode && renderMode != RENDER_TEMPLATE) {
+		if (this.renderMode != renderMode && this.renderMode != RENDER_TEMPLATE) {
 			// TODO create enum for user friendly message
-			l.info("render mode should not changes");
+			l.debug("render mode should not changes. old[{}] new[{}] ", this.renderMode, renderMode);
+			
 		}
 		this.renderMode = renderMode;
 	}
@@ -91,6 +99,14 @@ public class Controller {
 			case RENDER_TEXT:
 				response.text(getText());
 				break;
+				
+			case RENDER_JSON:
+				response.json(getJson());
+				break;
+				
+			case RENDER_JSONP:
+				response.jsonp(getJsonp());
+				break;
 
 			default:
 				throw new Ex500("No render method used ");
@@ -117,6 +133,24 @@ public class Controller {
 	public final void setText(String text) {
 		setRenderMode(RENDER_TEXT);
 		this.text = text;
+	}
+	
+	public String getJson() {
+		return json;
+	}
+
+	public void setJson(String json) {
+		setRenderMode(RENDER_JSON);
+		this.json = json;
+	}
+
+	public String getJsonp() {
+		return jsonp;
+	}
+
+	public void setJsonp(String jsonp) {
+		setRenderMode(RENDER_JSONP);
+		this.jsonp = jsonp;
 	}
 
 }

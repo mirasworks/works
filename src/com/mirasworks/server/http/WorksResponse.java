@@ -32,12 +32,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
+import org.jboss.netty.util.internal.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,13 @@ public class WorksResponse extends DefaultHttpResponse {
 	// /////////////////////////////////////////////////////////////////////////
 	public static final String TEXT_HTML = "text/html";
 	public static final String TEXT_PLAIN = "text/plain";
+	/**
+	 * not fully implemented : cannot set text or html type
+	 */
 	public static final String APPLICATION_JSON = "application/json";
+	/**
+	 * not yet implemented : requires callback parameter parsing
+	 */
 	public static final String APPLICATION_JSONP = "application/javascript";
 	public static final String APPLICATION_XML = "application/xml";
 	public static final String APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -83,6 +91,10 @@ public class WorksResponse extends DefaultHttpResponse {
 	private List<Cookie> cookies;
 
 	private String template;
+	/**
+	 * if content is text readable
+	 */
+	private String contentText = "";
 
 	// TODO make a getter setter
 	public ByteArrayOutputStream bytearrayOutputStream;
@@ -199,7 +211,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	public void setKeepAliveHeaders() {
 
 		long lenght = 0;
-		if(getRandomAcessFile() !=null) {
+		if (getRandomAcessFile() != null) {
 			lenght = getFileLength();
 		} else {
 			lenght = getContent().readableBytes();
@@ -264,9 +276,8 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @throws Ex500
 	 */
 	public WorksResponse html(String html) throws Ex500 {
+		setContentText(html);
 		setCharContentType(TEXT_HTML);
-		// TODO use template instead
-		// TODO make template path configurable
 		return writeString(html);
 
 	}
@@ -278,8 +289,10 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#APPLICATION_JSON}.
 	 */
-	public WorksResponse json() {
-		setCharContentType(APPLICATION_JSON);
+	public WorksResponse json(String json) throws Ex500 {
+		setContentText(json);
+		headers().set(HttpHeaders.Names.CONTENT_TYPE, APPLICATION_JSON);
+		writeString(json);
 		return this;
 	}
 
@@ -290,8 +303,10 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#APPLICATION_JSONP}.
 	 */
-	public WorksResponse jsonp() {
-		setCharContentType(APPLICATION_JSONP);
+	public WorksResponse jsonp(String jsonP) throws Ex500 {
+		setContentText(jsonP);
+		headers().set(HttpHeaders.Names.CONTENT_TYPE, APPLICATION_JSONP);
+		writeString(jsonP);
 		return this;
 	}
 
@@ -306,6 +321,7 @@ public class WorksResponse extends DefaultHttpResponse {
 	 * @throws Ex500
 	 */
 	public WorksResponse text(String text) throws Ex500 {
+		setContentText(text);
 		setCharContentType(TEXT_PLAIN);
 		writeString(text);
 		return this;
@@ -317,13 +333,15 @@ public class WorksResponse extends DefaultHttpResponse {
 	 *
 	 * @return the same Response where you executed this method on. But the
 	 *         content type is now {@link WorksResponse#APPLICATON_XML}.
+	 * @throws Ex500 
 	 */
-	public WorksResponse xml() {
+	public WorksResponse xml(String xml) throws Ex500 {
+		setContentText(xml);
 		setCharContentType(APPLICATION_XML);
+		writeString(xml);
 		return this;
 	}
 
-	// TODO here lack FileType contentType and others
 
 	/**
 	 * This function sets
@@ -386,21 +404,20 @@ public class WorksResponse extends DefaultHttpResponse {
 			throw e;
 		}
 		headers().set(HttpHeaders.Names.CONTENT_LENGTH, fileLength);
-		
 
 		Path path = file.toPath();
 		String contentType = Files.probeContentType(path);
 
-		if(contentType != null) {
-			
+		if (contentType != null) {
+
 			headers().set(HttpHeaders.Names.CONTENT_TYPE, contentType);
 		} else {
-			//http://stackoverflow.com/questions/51438/getting-a-files-mime-type-in-java/847849#847849
-			//apache tika or an internal map of content type if not fast
+			// http://stackoverflow.com/questions/51438/getting-a-files-mime-type-in-java/847849#847849
+			// apache tika or an internal map of content type if not fast
 			l.error("content type not detected for {}:", path);
 		}
 		setDateAndCacheHeaders(file);
-		
+
 	}
 
 	/**
@@ -423,4 +440,45 @@ public class WorksResponse extends DefaultHttpResponse {
 		headers().set(CACHE_CONTROL, "private, max-age=" + HTTP_CACHE_SECONDS);
 		headers().set(HttpHeaders.Names.LAST_MODIFIED, dateFormatter.format(new Date(fileToCache.lastModified())));
 	}
+
+	public String getContentText() {
+		return contentText;
+	}
+
+	public void setContentText(String contentText) {
+		this.contentText = contentText;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder buf = new StringBuilder();
+		buf.append(getClass().getSimpleName());
+		buf.append("(chunked: ");
+		buf.append(isChunked());
+		buf.append(')');
+		buf.append(StringUtil.NEWLINE);
+		buf.append(getProtocolVersion().getText());
+		buf.append(' ');
+		buf.append(getStatus().toString());
+		buf.append(StringUtil.NEWLINE);
+		for (Map.Entry<String, String> e : headers()) {
+			buf.append(e.getKey());
+			buf.append(": ");
+			buf.append(e.getValue());
+			buf.append(StringUtil.NEWLINE);
+		}
+		buf.setLength(buf.length() - StringUtil.NEWLINE.length());
+
+		buf.append(StringUtil.NEWLINE);
+		//may have many lines here
+		if(!getContentText().isEmpty()) {
+			buf.append("text content: ");
+			buf.append(StringUtil.NEWLINE);
+			buf.append(getContentText());
+		}	
+
+		// Remove the last newline.
+		return buf.toString();
+	}
+
 }

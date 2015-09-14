@@ -13,6 +13,7 @@ import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.WorksResponse;
 import com.mirasworks.server.http.exceptions.Ex403Forbiden;
 import com.mirasworks.server.http.exceptions.Ex500;
+import com.mirasworks.server.http.exceptions.ExHttp;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 
 public class ControllerInvokerModule implements Imodule {
@@ -31,7 +32,7 @@ public class ControllerInvokerModule implements Imodule {
 
 	}
 
-	public WorksResponse serve(WorksRequest request) throws ExNotMe, Ex500, Ex403Forbiden {
+	public WorksResponse serve(WorksRequest request) throws ExHttp {
 
 		String uri = request.getUri();
 		if (uri != null && uri.contains(".")) {
@@ -107,7 +108,6 @@ public class ControllerInvokerModule implements Imodule {
 				method.invoke(controller, params);
 
 			} catch (SecurityException e) {
-				// TODO serve forbiden instead
 				l.warn(e.getMessage());
 				throw new Ex403Forbiden(e);
 
@@ -124,8 +124,8 @@ public class ControllerInvokerModule implements Imodule {
 				throw new ExNotMe(e);
 
 			} catch (InvocationTargetException e) {
+				//something get wrong in the client controller code
 				l.error(e.getMessage());
-				// TODO serve 404 instead ?
 				throw new Ex500(e);
 
 			}
@@ -134,7 +134,6 @@ public class ControllerInvokerModule implements Imodule {
 			return response;
 
 		} else {
-			l.info("not a controller instance");
 			throw new ExNotMe("not a controller instance");
 		}
 

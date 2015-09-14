@@ -123,6 +123,7 @@ public abstract class MessageEncoder extends OneToOneEncoder {
 		return msg;
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void encodeHeaders(ChannelBuffer buf, HttpMessage message) {
 		try {
 			for (Map.Entry<String, String> h : message.getHeaders()) {
@@ -133,6 +134,7 @@ public abstract class MessageEncoder extends OneToOneEncoder {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private static void encodeTrailingHeaders(ChannelBuffer buf, HttpChunkTrailer trailer) {
 		try {
 			for (Map.Entry<String, String> h : trailer.getHeaders()) {
