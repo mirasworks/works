@@ -30,18 +30,24 @@ public class Invoker {
 		 * renamed and used as modules
 		 */
 
+		String uri = request.getUri();
 		try {
 
 			ControllerInvokerModule controllerModule = new ControllerInvokerModule(context);
 			try {
-				return controllerModule.serve(request);
+				WorksResponse response = controllerModule.serve(request);
+				l.info("serve controler : {}", uri);
+				return response;
+
 			} catch (ExNotMe e) {
 				l.debug("ControllerInvokerModule pass: {}", e.getMessage());
 			}
 
 			StaticFileModule staticModule = new StaticFileModule(context);
 			try {
-				return staticModule.serve(request);
+				WorksResponse response = staticModule.serve(request);
+				l.info("serve static: {}", uri);
+				return response;
 			} catch (ExNotMe e) {
 				l.debug("StaticFileModule pass: {}", e.getMessage());
 				// nothing to do... who's next ?
@@ -50,6 +56,7 @@ public class Invoker {
 		} catch (Ex403Forbiden e) {
 			return serveForbiden(request, e);
 		} catch (Exception e) {
+			l.error("500 : ", e);
 			return serve500(request, e);
 		}
 
