@@ -134,9 +134,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 		// header.
 		ChannelFuture future = Channel.write(WorksResponse);
 
-		/**
-		 * BEGIN
-		 */
+	
 
 		Long fileLenght = WorksResponse.getFileLength();
 		if (randomAcessFile != null) {

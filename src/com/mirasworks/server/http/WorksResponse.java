@@ -390,7 +390,15 @@ public class WorksResponse extends DefaultHttpResponse {
 
 		Path path = file.toPath();
 		String contentType = Files.probeContentType(path);
-		headers().set(HttpHeaders.Names.CONTENT_TYPE, contentType);
+
+		if(contentType != null) {
+			
+			headers().set(HttpHeaders.Names.CONTENT_TYPE, contentType);
+		} else {
+			//http://stackoverflow.com/questions/51438/getting-a-files-mime-type-in-java/847849#847849
+			//apache tika or an internal map of content type if not fast
+			l.error("content type not detected for {}:", path);
+		}
 		setDateAndCacheHeaders(file);
 		
 	}
