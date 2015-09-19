@@ -136,25 +136,25 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 
 	
 
-		Long fileLenght = WorksResponse.getFileLength();
+		Long fileLength = WorksResponse.getFileLength();
 		if (randomAcessFile != null) {
 
-			if (fileLenght != null) {
-				long lenght = fileLenght.longValue();
+			if (fileLength != null) {
+				long length = fileLength.longValue();
 
 				// Write the content.
 				ChannelFuture fileFuture;
 				if (Channel.getPipeline().get(SslHandler.class) != null) {
 					try {
 						// Cannot use zero-copy with HTTPS.
-						fileFuture = Channel.write(new ChunkedFile(randomAcessFile, 0, lenght, 8192));
+						fileFuture = Channel.write(new ChunkedFile(randomAcessFile, 0, length, 8192));
 					} catch (IOException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				} else {
 					// No encryption - use zero-copy.
-					final FileRegion region = new DefaultFileRegion(randomAcessFile.getChannel(), 0, lenght);
+					final FileRegion region = new DefaultFileRegion(randomAcessFile.getChannel(), 0, length);
 					fileFuture = Channel.write(region);
 					final String path = worksRequest.getUri();
 					fileFuture.addListener(new ChannelFutureProgressListener() {
@@ -175,7 +175,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 				}
 
 			} else {
-				l.error("random acess file was instanciated but response handle no lenght");
+				l.error("random acess file was instanciated but the response returns null length");
 				try {
 					randomAcessFile.close();
 				} catch (IOException e) {
@@ -201,6 +201,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 	@Override
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) throws Exception {
 		if (this == ctx.getPipeline().getLast()) {
+			//TODO may be serve 500 here instead
 			l.error("http handler has closed a connection cause {} {} {}", e.getCause(), e);
 		}
 		ctx.sendUpstream(e);
