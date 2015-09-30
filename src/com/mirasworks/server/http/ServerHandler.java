@@ -35,7 +35,7 @@ import com.mirasworks.server.Invoker;
 
 /**
  *
- * @author Koda here we build the http response
+ * Damien MIRAS here we build the http response
  */
 public class ServerHandler extends SimpleChannelUpstreamHandler {
 

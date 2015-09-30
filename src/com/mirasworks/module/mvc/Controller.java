@@ -8,6 +8,7 @@ import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.mirasworks.server.http.WorksRequest;
 import com.mirasworks.server.http.WorksResponse;
 import com.mirasworks.server.http.exceptions.Ex500;
 
@@ -34,6 +35,12 @@ public class Controller {
 	private static final int RENDER_JSONP = 4;
 
 	private int renderMode = RENDER_TEMPLATE;
+
+	protected WorksRequest request = null;
+	
+	public void setRequest(WorksRequest request) {
+		this.request = request;
+	}
 
 	public Controller() {
 

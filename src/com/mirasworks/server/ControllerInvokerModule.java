@@ -101,7 +101,7 @@ public class ControllerInvokerModule implements Imodule {
 			controller.setTemplateEngine(templateEngine);
 
 			try {
-
+				controller.setRequest(request);
 				method = object.getClass().getMethod(methodName, new Class[] {});
 				// here inject the params
 				Object[] params = new Object[] {};

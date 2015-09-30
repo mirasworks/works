@@ -12,7 +12,7 @@ import com.mirasworks.start.Application;
 
 /**
  *
- * @author Koda
+ * Damien MIRAS
  * This class is not singleton but should be instanciated once by the application
  * each instance has its own cache and setting
  *

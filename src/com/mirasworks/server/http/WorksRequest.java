@@ -123,13 +123,15 @@ public class WorksRequest extends DefaultHttpRequest {
         return params.isEmpty();
     }
 
-    public boolean paramContainsKey(Object key) {
+    public boolean paramContainsKey(String key) {
         return params.containsKey(key);
     }
 
-    public List<String> getParam(Object key) {
+    
+    public List<String> getParam(String key) {
         return params.get(key);
     }
+
 
     public Set<String> getParamkeySet() {
         return params.keySet();

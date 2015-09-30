@@ -5,7 +5,7 @@ import com.mirasworks.tools.clia.impl.CliApplication;
 
 /**
  * 
- * @author Koda
+ * Damien MIRAS
  *
  */
 public class Application extends CliApplication {
@@ -18,9 +18,7 @@ public class Application extends CliApplication {
     }
 
 
-    //TODO Damien see config
-    //https://www.playframework.com/documentation/1.2.4/configuration
-    //for configuration we should handle
+
     public static ConfigurationManager getConfig() {
         return config;
     }

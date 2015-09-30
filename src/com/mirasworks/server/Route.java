@@ -18,7 +18,7 @@ import com.mirasworks.server.http.exceptions.Ex400BadRequest;
  * TODO make a route cache with that to avoid resolve the route many times TODO
  * load a route file
  *
- * @author Koda
+ * Damien MIRAS
  *
  */
 public class Route {
@@ -49,6 +49,7 @@ public class Route {
 
 				if (lastPartChunck.length > 1) {
 					try {
+						//TODO probably already in the request...
 						paramMap = splitQuery(lastPartChunck[1]);
 						l.info("paramsMap: {}", paramMap);
 					} catch (UnsupportedEncodingException e) {

@@ -6,7 +6,7 @@ import com.mirasworks.tools.clia.impl.CliCommandParser;
 
 /**
  * 
- * @author Koda
+ * Damien MIRAS
  *         This class is in WIP and have to be tuned but global idea is here
  * 
  * 
