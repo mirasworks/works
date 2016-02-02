@@ -31,7 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mirasworks.server.Context;
-import com.mirasworks.server.Invoker;
+import com.mirasworks.server.Dispatcher;
 
 /**
  *
@@ -120,7 +120,7 @@ public class ServerHandler extends SimpleChannelUpstreamHandler {
 
 		// let the framework build the response object.
 		WorksResponse WorksResponse = null;
-		Invoker invoker = new Invoker(context);
+		Dispatcher invoker = new Dispatcher(context);
 		WorksResponse = invoker.invoke(worksRequest);
 		final RandomAccessFile randomAcessFile = WorksResponse.getRandomAcessFile();
 

@@ -59,11 +59,8 @@ public class Route {
 
 			} else if (lastPartChunck.length == 0) {
 				controllerMethodName = uriChunk[2];
-
 			}
-
 		}
-
 	}
 
 	public static Map<String, List<String>> splitQuery(String params) throws UnsupportedEncodingException {

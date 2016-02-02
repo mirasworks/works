@@ -21,14 +21,14 @@ public class ControllerInvokerModule implements Imodule {
 	private static String controllerPackageName = "controller.";
 	private static String controllerSuffix = "Controller";
 
-	private StringBuffer classPathBuff = null;
+	private StringBuffer classPathStrb = null;
 	private TemplateEngineBridge templateEngine;
 
 	public ControllerInvokerModule(Context context) {
 
 		this.templateEngine = context.getTemplateEngineBridge();
-		classPathBuff = new StringBuffer();
-		classPathBuff.append(controllerPackageName);
+		classPathStrb = new StringBuffer();
+		classPathStrb.append(controllerPackageName);
 
 	}
 
@@ -41,9 +41,9 @@ public class ControllerInvokerModule implements Imodule {
 
 		Route route = new Route(request);
 
-		classPathBuff.append(route.getControllerName());
-		classPathBuff.append(controllerSuffix);
-		String classPath = classPathBuff.toString();
+		classPathStrb.append(route.getControllerName());
+		classPathStrb.append(controllerSuffix);
+		String classPath = classPathStrb.toString();
 
 		String methodName = route.getMethodName();
 

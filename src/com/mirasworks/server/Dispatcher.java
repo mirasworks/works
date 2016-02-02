@@ -11,11 +11,11 @@ import com.mirasworks.server.http.exceptions.Ex403Forbiden;
 import com.mirasworks.server.http.exceptions.Ex500;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 
-public class Invoker {
-	private final Logger l = LoggerFactory.getLogger(Invoker.class);
+public class Dispatcher {
+	private final Logger l = LoggerFactory.getLogger(Dispatcher.class);
 	private Context context;
 
-	public Invoker(Context context) {
+	public Dispatcher(Context context) {
 		this.context = context;
 
 	}
