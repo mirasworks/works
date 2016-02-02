@@ -1,5 +1,6 @@
 package com.mirasworks.server.http;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -129,7 +130,13 @@ public class WorksRequest extends DefaultHttpRequest {
 
     
     public List<String> getParam(String key) {
-        return params.get(key);
+
+    	List<String> param = params.get(key);
+    	if(param != null) {
+    		return param;
+    	} else {
+    		return new ArrayList<String>();
+    	}
     }
 
 
