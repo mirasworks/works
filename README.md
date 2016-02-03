@@ -16,7 +16,7 @@ For the moment it can serve a request down to a controller and a response from i
 
 
 Milestone 1 let's get started
-* static serving 
+* Ok static serving 
 * random file up/down from the controller
 * dynamic reload of configuration
 * a lot of security improvement
