@@ -36,6 +36,9 @@ Milestone 2 do it better
 * split static and controller mechanics in modules
 * make it more hackable to allow everyone to replace and modify components
 
+Milestone 3 open to the world
+* give more documentation and demonstration
+
 
  
 
