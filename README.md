@@ -23,7 +23,7 @@ Milestone 1 let's get started
 * a lot of security improvement
 * session and cookies management
 * client project generation from command
-* erros in html templates while dev mode enabled
+* errors in html templates while dev mode enabled
 * stop and restart by command line
 * more commands line
 
