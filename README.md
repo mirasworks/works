@@ -15,6 +15,7 @@ There is a lot to do.
 For the moment it can serve a request down to a controller and a response from it and could be used backed from nginx for static serving. But there is no ajax json for the moment.
 
 
+
 Milestone 1 let's get started
 * Ok static serving 
 * random file up/down from the controller
