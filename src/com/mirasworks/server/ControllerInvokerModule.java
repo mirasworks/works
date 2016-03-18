@@ -17,126 +17,126 @@ import com.mirasworks.server.http.exceptions.ExHttp;
 import com.mirasworks.server.http.exceptions.ExNotMe;
 
 public class ControllerInvokerModule implements Imodule {
-	private final Logger l = LoggerFactory.getLogger(ControllerInvokerModule.class);
-	private static String controllerPackageName = "controller.";
-	private static String controllerSuffix = "Controller";
+    private final Logger l = LoggerFactory.getLogger(ControllerInvokerModule.class);
+    private static String controllerPackageName = "controller.";
+    private static String controllerSuffix = "Controller";
 
-	private StringBuffer classPathStrb = null;
-	private TemplateEngineBridge templateEngine;
+    private StringBuffer classPathStrb = null;
+    private TemplateEngineBridge templateEngine;
 
-	public ControllerInvokerModule(Context context) {
+    public ControllerInvokerModule(Context context) {
 
-		this.templateEngine = context.getTemplateEngineBridge();
-		classPathStrb = new StringBuffer();
-		classPathStrb.append(controllerPackageName);
+        this.templateEngine = context.getTemplateEngineBridge();
+        classPathStrb = new StringBuffer();
+        classPathStrb.append(controllerPackageName);
 
-	}
+    }
 
-	public WorksResponse serve(WorksRequest request) throws ExHttp {
+    public WorksResponse serve(WorksRequest request) throws ExHttp {
 
-		String uri = request.getUri();
-		if (uri != null && uri.contains(".")) {
-			throw new ExNotMe("route contains dots");
-		}
+        String uri = request.getUri();
+        if (uri != null && uri.contains(".")) {
+            throw new ExNotMe("route contains dots");
+        }
 
-		Route route = new Route(request);
+        Route route = new Route(request);
 
-		classPathStrb.append(route.getControllerName());
-		classPathStrb.append(controllerSuffix);
-		String classPath = classPathStrb.toString();
+        classPathStrb.append(route.getControllerName());
+        classPathStrb.append(controllerSuffix);
+        String classPath = classPathStrb.toString();
 
-		String methodName = route.getMethodName();
+        String methodName = route.getMethodName();
 
-		Class<?> clazz;
-		Constructor<?> ctor;
+        Class<?> clazz;
+        Constructor<?> ctor;
 
 
-		try {
-			clazz = Class.forName(classPath);
-		} catch (ClassNotFoundException e) {
-			l.error("class not found : " + e.getMessage());
-			throw new ExNotMe(e);
-		}
+        try {
+            clazz = Class.forName(classPath);
+        } catch (ClassNotFoundException e) {
+            l.error("class not found : " + e.getMessage());
+            throw new ExNotMe(e);
+        }
 
-		try {
-			ctor = clazz.getConstructor();
-		} catch (NoSuchMethodException | SecurityException e) {
-			l.error("constructor  not found : " + e.getMessage());
-			throw new ExNotMe(e);
-		}
+        try {
+            ctor = clazz.getConstructor();
+        } catch (NoSuchMethodException | SecurityException e) {
+            l.error("constructor  not found : " + e.getMessage());
+            throw new ExNotMe(e);
+        }
 
-		Object object;
-		try {
-			object = ctor.newInstance();
+        Object object;
+        try {
+            object = ctor.newInstance();
 
-		} catch (InstantiationException e) {
-			l.error("instanciation failed : " + e.getMessage());
-			throw new ExNotMe(e);
+        } catch (InstantiationException e) {
+            l.error("instanciation failed : " + e.getMessage());
+            throw new ExNotMe(e);
 
-		} catch (IllegalAccessException e) {
-			l.error("illegal access exp : " + e.getMessage());
-			throw new ExNotMe(e);
+        } catch (IllegalAccessException e) {
+            l.error("illegal access exp : " + e.getMessage());
+            throw new ExNotMe(e);
 
-		} catch (IllegalArgumentException e) {
-			l.error("illegalArgument " + e.getMessage());
-			throw new ExNotMe(e);
+        } catch (IllegalArgumentException e) {
+            l.error("illegalArgument " + e.getMessage());
+            throw new ExNotMe(e);
 
-		} catch (InvocationTargetException e) {
-			l.error("invocationTarget exp ( exception caused by the controller )" + e.getCause().getMessage());
-			throw new ExNotMe(e.getCause());
+        } catch (InvocationTargetException e) {
+            l.error("invocationTarget exp ( exception caused by the controller )" + e.getCause().getMessage());
+            throw new ExNotMe(e.getCause());
 
-		}
+        }
 
-		if (object instanceof Controller) {
+        if (object instanceof Controller) {
 
-			Method method = null;
-			Controller controller = null;
-			controller = (Controller) object;
-			StringBuilder strb = new StringBuilder();
-			strb.append(route.getControllerName());
-			strb.append("/");
-			strb.append(methodName);
+            Method method = null;
+            Controller controller = null;
+            controller = (Controller) object;
+            StringBuilder strb = new StringBuilder();
+            strb.append(route.getControllerName());
+            strb.append("/");
+            strb.append(methodName);
 
-			controller.setTemplatePath(strb.toString());
-			controller.setTemplateEngine(templateEngine);
+            controller.setTemplatePath(strb.toString());
+            controller.setTemplateEngine(templateEngine);
 
-			try {
-				controller.setRequest(request);
-				method = object.getClass().getMethod(methodName, new Class[] {});
-				// here inject the params
-				Object[] params = new Object[] {};
-				method.invoke(controller, params);
+            try {
+                controller.setRequest(request);
+                method = object.getClass().getMethod(methodName, new Class[] {});
+                // here inject the params
+                Object[] params = new Object[] {};
+                method.invoke(controller, params);
 
-			} catch (SecurityException e) {
-				l.warn(e.getMessage());
-				throw new Ex403Forbiden(e);
+            } catch (SecurityException e) {
+                l.warn(e.getMessage());
+                throw new Ex403Forbiden(e);
 
-			} catch (NoSuchMethodException e) {
-				l.warn(e.getMessage());
-				throw new ExNotMe(e);
+            } catch (NoSuchMethodException e) {
+                l.warn("no such method {} {}", method, e.getMessage());
+                throw new ExNotMe(e);
 
-			} catch (IllegalAccessException e) {
-				l.info(e.getMessage());
-				throw new ExNotMe(e);
+            } catch (IllegalAccessException e) {
+                l.info(e.getMessage());
+                throw new ExNotMe(e);
 
-			} catch (IllegalArgumentException e) {
-				l.info(e.getMessage());
-				throw new ExNotMe(e);
+            } catch (IllegalArgumentException e) {
+                l.info(e.getMessage());
+                throw new ExNotMe(e);
 
-			} catch (InvocationTargetException e) {
-				//something get wrong in the client controller code
-				l.error(e.getMessage());
-				throw new Ex500(e);
+            } catch (InvocationTargetException e) {
+                //something get wrong in the client controller code
+                l.error(e.getMessage());
+                throw new Ex500(e);
 
-			}
+            }
 
-			WorksResponse response = controller.getResponse();
-			return response;
+            WorksResponse response = controller.getResponse();
+            return response;
 
-		} else {
-			throw new ExNotMe("not a controller instance");
-		}
+        } else {
+            throw new ExNotMe("not a controller instance");
+        }
 
-	}
+    }
 
 }
