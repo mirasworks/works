@@ -11,7 +11,7 @@ Works is inspired by concepts and architecture I liked in different http servers
 * java jetty
 * java playframework
 
-The project is in an early experimental phase and the API will probably changes a lot until the version 1
+The project is in an early experimental phase and the API will probably change a lot until the version 1
 There is a lot to do.
 
 For the moment it can serve a request down to a controller and a response from it and could be used backed from nginx for static serving.
