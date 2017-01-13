@@ -16,7 +16,7 @@ For the moment it can serve a request down to a controller and a response from i
 
 
 
-Milestone 1 let's get started
+## Milestone 1 let's get started
 - [x] static file serving 
 - [x] json rendering for ajax
 - [ ] random file up/down from the controller
@@ -32,7 +32,7 @@ Milestone 1 let's get started
 - [ ] stop and restart by command line
 - [ ] more commands line
 
-Milestone 2 do it better
+## Milestone 2 do it better
 * load tests and benchmarks
 * instrumentation
 * caching and optimizations
@@ -42,7 +42,7 @@ Milestone 2 do it better
 * make it more hackable to allow everyone to replace and modify components
 
 
-Milestone 3 open to the world
+## Milestone 3 open to the world
 * provide full documentation 
 * provide demo and example (blog/ecommerce etc)
 * gzip module
