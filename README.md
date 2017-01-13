@@ -1,6 +1,8 @@
 # works 
 # Java http server based on jboss netty.
 
+(this git is not dead and still in development. For a short period it is pushed to a private bitbucket account, if you would access or contribute on it ask me.)
+
 The main goal is to build a simple http server really easy to use for fast application writting. We don't want all the maven pom things and all the boilerplate configuration files written in xml, nor the deploiement process. 
 
 Works is inspired by concepts and architecture I liked in different http servers written in different languages.
