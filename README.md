@@ -17,20 +17,20 @@ For the moment it can serve a request down to a controller and a response from i
 
 
 Milestone 1 let's get started
-* [ ] static file serving 
-* [ ] json rendering for ajax
-* [ ] random file up/down from the controller
-* [ ] simple ORM
-* [ ] module and addon system
-* [ ] admin generator addon
-* [ ] auth addon
-* [ ] dynamic reload of configuration
-* [ ] a lot of security improvement
-* [ ] session and cookies management
-* [ ] client project generation from command
-* [ ] errors in html templates while dev mode enabled
-* [ ] stop and restart by command line
-* [ ] more commands line
+- [x] static file serving 
+- [x] json rendering for ajax
+- [ ] random file up/down from the controller
+- [x] simple ORM
+- [ ] module and addon system
+- [ ] admin generator addon
+- [ ] auth addon
+- [ ] dynamic reload of configuration
+- [ ] a lot of security improvement
+- [ ] session and cookies management
+- [ ] client project generation from command
+- [ ] errors in html templates while dev mode enabled
+- [ ] stop and restart by command line
+- [ ] more commands line
 
 Milestone 2 do it better
 * load tests and benchmarks
